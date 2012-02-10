@@ -49,3 +49,29 @@ function formatFileSize($bytes, $round = 2){
 	$bytes /= pow(1024,$pow);
 	return round($bytes,$round)." ".$units[$pow];
 }
+
+
+function getRamSettings(){
+	if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+		return false;
+	}
+	else{
+		$out = exec("free | grep Mem:");
+		$values =array_values(array_filter(array_map("trim", explode(" ",$out))));
+		$free = $values[3]*1000;
+		$used = $values[2]*1000;
+		$all = $values[1]*1000;
+		return array('all'=>$all,'free'=>$free,'used'=>$used);
+	}
+}
+
+function getCPUusage(){
+	if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+		return false;
+	}
+	else{
+		$out = exec("cat /proc/loadavg");
+		$values = array_map("trim", explode(" ",$out));
+		return array('last1'=>$values[0],'last5'=>$values[1],'last15'=>$values[2]);
+	}	
+}

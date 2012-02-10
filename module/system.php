@@ -1,6 +1,4 @@
 <h3>Systemverwaltung</h3>
-
-
 <?php
 if(isset($_SESSION['user'])){
 	if($_SESSION['user']->role['system'] == 1){
@@ -11,9 +9,26 @@ if(isset($_SESSION['user'])){
 		Images:
 		</div>';
 		echo '<div class="col_2"></div>';
+		
+		$ram = getRamSettings();
+		if($ram){
+			$ram_usage = formatFileSize($ram['used']).' / '.formatFileSize($ram['all']);
+		}
+		else{
+			$ram_usage = 'unknown';
+		}
+		
+		$cpu = getCPUusage();
+		if($cpu){
+			$cpu_usage = implode(" ",array_values($cpu));
+		}
+		else{
+			$cpu_usage = 'unknown';
+		}
+		
 		echo '<div class="col_5"><h4>Server Status</h4>
-		CPU: <br/>
-		Ram:<br/>
+		CPU: '.$cpu_usage.'<br/>
+		Ram: '.$ram_usage.'<br/>
 		HDD: '.formatFileSize(disk_free_space ('/')).' / '.formatFileSize(disk_total_space ('/')).'<br/></div>';
 
 		echo '<h4>Einstellungen</h4>';
