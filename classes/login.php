@@ -75,3 +75,13 @@ function getCPUusage(){
 		return array('last1'=>$values[0],'last5'=>$values[1],'last15'=>$values[2]);
 	}	
 }
+
+function foldersize($path){
+	if(!file_exists($path)) return 0;
+	if(is_file($path)) return filesize($path);
+	$ret = 0;
+	foreach(glob($path."/*") as $fn){
+		$ret += foldersize($fn);
+	}
+	return $ret;
+}

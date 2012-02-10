@@ -3,9 +3,12 @@
 if(isset($_SESSION['user'])){
 	if($_SESSION['user']->role['system'] == 1){
 			
+		$get = mysql_query("SELECT count(vmID) AS `vms`, SUM(IF(status=1,1,0)) AS `vms_on` FROM vm");
+		$data = mysql_fetch_assoc($get);
+		
 		echo '<div class="col_5"><h4>VM Status</h4>
-		VMs:<br/>
-		VMs online:<br/>
+		VMs: '.$data['vms'].'<br/>
+		VMs online: '.$data['vms_on'].'<br/>
 		Images:
 		</div>';
 		echo '<div class="col_2"></div>';
@@ -15,7 +18,7 @@ if(isset($_SESSION['user'])){
 			$ram_usage = formatFileSize($ram['used']).' / '.formatFileSize($ram['all']);
 		}
 		else{
-			$ram_usage = 'unknown';
+			$ram_usage = 'linux only';
 		}
 		
 		$cpu = getCPUusage();
@@ -23,13 +26,14 @@ if(isset($_SESSION['user'])){
 			$cpu_usage = implode(" ",array_values($cpu));
 		}
 		else{
-			$cpu_usage = 'unknown';
+			$cpu_usage = 'linux only';
 		}
 		
 		echo '<div class="col_5"><h4>Server Status</h4>
 		CPU: '.$cpu_usage.'<br/>
 		Ram: '.$ram_usage.'<br/>
-		HDD: '.formatFileSize(disk_free_space ('/')).' / '.formatFileSize(disk_total_space ('/')).'<br/></div>';
+		HDD: '.formatFileSize(disk_free_space ('/')).' / '.formatFileSize(disk_total_space('/')).'<br/>
+		Temp: '.formatFileSize(foldersize('/tmp/')).'</div>';
 
 		echo '<h4>Einstellungen</h4>';
 
