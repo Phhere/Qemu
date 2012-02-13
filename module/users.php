@@ -15,7 +15,9 @@ if(isset($_SESSION['user'])){
 				
 		}
 		elseif(isset($_POST['save_edit'])){
-				
+			if($_SESSION['user']->role['user_edit'] == 1){
+				mysql_query("UPDATE users SET role = '".$_POST['role']."' WHERE userID='".$_POST['user']."'");
+			}
 		}
 		elseif($action =='delete'){
 			
@@ -25,7 +27,35 @@ if(isset($_SESSION['user'])){
 			
 		}
 		elseif($action == 'edit'){
-			
+			if($_SESSION['user']->role['user_edit'] == 1){
+				
+				$user = $_GET['user'];
+				$get = mysql_query("SELECT * FROM users WHERE userID='".$user."'");
+				if(mysql_num_rows($get)){
+					$data = mysql_fetch_assoc($get);
+					$roles = '';
+					$get = mysql_query("SELECT * FROM roles");
+					while($ds = mysql_fetch_assoc($get)){
+						$roles .= '<option value="'.$ds['roleID'].'">'.$ds['name'].'</option>';
+					}
+					
+					$user_role = str_replace('value="'.$data['role'].'"', 'value="'.$data['role'].'" selected="selected"', $roles);
+					
+					echo '<form action="index.php?site=users" method="post">';
+						echo '<table cellspacing="0" cellpadding="0">
+						<thead><tr>
+				<th colspan="2">'.$data['email'].'</th>
+			</tr></thead>';
+							echo '<tr><td>Role:</td><td><select class="no-margin" name="role">'.$user_role.'</select></td></tr>';
+						echo '</table>';
+						echo '<input type="hidden" name="user" value="'.$data['userID'].'"/><input type="submit" class="no-margin center" name="save_edit" value="Speichern" />';
+					echo '</form>';
+				}
+				else{
+					echo '<div class="notice warning">Es existiert kein Nutzer mit dieser ID</div>';
+				}
+				
+			}
 		}
 		else{
 			

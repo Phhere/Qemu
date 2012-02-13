@@ -6,10 +6,12 @@ if(isset($_SESSION['user'])){
 		$get = mysql_query("SELECT count(vmID) AS `vms`, SUM(IF(status=1,1,0)) AS `vms_on` FROM vm");
 		$data = mysql_fetch_assoc($get);
 		
+		$images=mysql_num_rows(mysql_query("SELECT imageID FROM images"));
+		
 		echo '<div class="col_5"><h4>VM Status</h4>
 		VMs: '.$data['vms'].'<br/>
 		VMs online: '.$data['vms_on'].'<br/>
-		Images:
+		Images: '.$images.'
 		</div>';
 		echo '<div class="col_2"></div>';
 		
@@ -33,7 +35,7 @@ if(isset($_SESSION['user'])){
 		CPU: '.$cpu_usage.'<br/>
 		Ram: '.$ram_usage.'<br/>
 		HDD: '.formatFileSize(disk_free_space ('/')).' / '.formatFileSize(disk_total_space('/')).'<br/>
-		Temp: '.formatFileSize(foldersize('/tmp/')).'</div>';
+		Qemu Ram: '.formatFileSize(foldersize('/dev/shm')).'</div>';
 
 		echo '<h4>Einstellungen</h4>';
 
@@ -78,6 +80,12 @@ if(isset($_SESSION['user'])){
 					<td>VNC Startport</td>
 					<td><input type="text" class="no-margin" size="6" name="vncport_min" value="'.$GLOBALS['config']['vncport_min'].'" /></td>
 				</tr>';
+	
+		echo '<tr>
+							<td>Log Path</td>
+							<td><input type="text" class="no-margin" name="log_path" value="'.$GLOBALS['config']['log_path'].'" /></td>
+						</tr>';
+		
 		echo '</table>';
 		echo '<input type="submit" class="no-margin center" name="save" value="Speichern" />';
 		echo '</form>';

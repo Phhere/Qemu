@@ -67,9 +67,8 @@ if(isset($_SESSION['user'])){
 	<th width="80"> </th>
 	<th>Image</th>
 	<th>Ram</th>
-	<th>Status</th>
 	<th width="120">Last Run</th>
-	<th width="80">Options</th>
+	<th width="140">Options</th>
 </tr></thead>';
 		while($ds = mysql_fetch_assoc($get)){
 			if($ds['lastrun'] != '0000-00-00'){
@@ -79,18 +78,17 @@ if(isset($_SESSION['user'])){
 				$lastrun = '---';
 			}
 			if($ds['status'] == QemuMonitor::RUNNING){
-				$buttons = '<a href="index.php?site=myvm&action=stop&vmID='.$ds['vmID'].'" class="button red small center "><span class="icon">Q</span>Stop</a>';
+				$buttons = '<a href="index.php?site=myvm&action=stop&vmID='.$ds['vmID'].'" class="button red small center  no-margin"><span class="icon">Q</span>Stop</a>';
 				$buttons .='<a href="vnc.php?vmID='.$ds['vmID'].'"class="button small center grey  no-margin"><span class="icon">0</span>VNC</a>';
 			}
 			else{
-				$buttons  = '<a href="index.php?site=myvm&action=start&vmID='.$ds['vmID'].'" class="button green small center"><span class="icon">&nbsp;</span>Start</a><br/>';
-				$buttons .='<a class="button small center no-margin grey "><span class="icon">G</span>Edit</a>';
+				$buttons  = '<a href="index.php?site=myvm&action=start&vmID='.$ds['vmID'].'" class="button green small center no-margin"><span class="icon">&nbsp;</span>Start</a>';
+				$buttons .='<a class="button small center grey no-margin"><span class="icon">G</span>Edit</a>';
 			}
 			echo '<tr>
 	<th>'.$ds['name'].'</th>
 	<td>'.Image::getImagePath($ds['image']).'</td>
 	<td>'.$ds['ram'].' MB</td>
-	<td>'.$ds['status'].'</td>
 	<td>'.$lastrun.'</td>
 	<td>'.$buttons.'</td>
 </tr>';

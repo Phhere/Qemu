@@ -33,17 +33,17 @@ if(isset($_GET['site'])){
 <!-- ===================================== END HEADER ===================================== -->
 	 <!-- Menu Horizontal -->
 	<ul class="menu">
-	<li class="current"><a href="index.php">Startseite</a></li>
-	<li><a href="index.php?site=myvm">Meine VMs</a></li>
-	<li><a href=""><span class="icon">R</span>Verwaltung</a>
+	<li class="<?php echo (in_array($GLOBALS['site'],array("","start"))) ? 'current' : '';?>"><a href="index.php">Startseite</a></li>
+	<li class="<?php echo (in_array($GLOBALS['site'],array("myvm"))) ? 'current' : '';?>"><a href="index.php?site=myvm">Meine VMs</a></li>
+	<li class="<?php echo (in_array($GLOBALS['site'],array("images","vms","users","system"))) ? 'current' : '';?>"><a href=""><span class="icon">R</span>Verwaltung</a>
 		<ul>
-		<li><a href=""><span class="icon">4</span>Vms</a></li>
-		<li><a href=""><span class="icon">D</span>Images</a></li>
-		<li class="divider"><a href="index.php?site=users"><span class="icon">u</span>Benutzer</a></li>
-		<li class="divider"><a href="index.php?site=system"><span class="icon">S</span>Einstellungen</a></li>
+		<li class="<?php echo (in_array($GLOBALS['site'],array("vms"))) ? 'current' : '';?>"><a href=""><span class="icon">4</span>Vms</a></li>
+		<li class="<?php echo (in_array($GLOBALS['site'],array("images"))) ? 'current' : '';?>"><a href="index.php?site=images"><span class="icon">D</span>Images</a></li>
+		<li class="divider <?php echo (in_array($GLOBALS['site'],array("users"))) ? 'current' : '';?>"><a href="index.php?site=users"><span class="icon">u</span>Benutzer</a></li>
+		<li class="divider <?php echo (in_array($GLOBALS['site'],array("system"))) ? 'current' : '';?>"><a href="index.php?site=system"><span class="icon">S</span>Einstellungen</a></li>
 		</ul>
 	</li>
-	<li><a href="">Item 4</a></li>
+	<li class="<?php echo (in_array($GLOBALS['site'],array("downloads"))) ? 'current' : '';?>"><a href="index.php?site=downloads">Downloads</a></li>
 	</ul>
 	 
 <div class="col_12">

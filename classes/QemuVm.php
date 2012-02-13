@@ -41,9 +41,7 @@ class QemuVm {
 		$cmd .=" -M isapc";
 		$cmd .=" -monitor telnet:localhost:".$this->monitor_port.",server,nowait";
 		$cmd .=" -vnc :".$this->vmID;
-		
-		echo $cmd;
-		
+			
 		$this->executeStart($cmd);
 		$this->setStatus(QemuMonitor::RUNNING);
 		mysql_query("UPDATE vm SET lastrun=NOW() WHERE vmID='".$this->vmID."'");
@@ -177,12 +175,19 @@ class QemuVm {
 	}
 
 	private function executeStart($cmd){
+		/**
+		 * @Todo logging einbauen
+		 * $cmd = $cmd.">".$GLOBALS['config']['log_path']."\\vm_".$this->vmID."_".date("d_m_Y_H_i").".log";
+		 */
 		if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
 			$WshShell = new COM("WScript.Shell");
+			//$cmd = $cmd.">".$GLOBALS['config']['log_path']."\\vm_".$this->vmID."_".date("d_m_Y_H_i").".log";
 			$WshShell->Run($cmd, 0, false);
 		}
 		else{
-			exec( $cmd." > /dev/null &");
+			//$cmd = $cmd." > ".$GLOBALS['config']['log_path']."\\vm_".$this->vmID."_".date("d.m.Y H:i").".log &";
+			$cmd =  $cmd." &";
+			exec($cmd);
 		}
 	}
 }

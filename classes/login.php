@@ -44,9 +44,14 @@ function getRoleName($roleID){
  */
 function formatFileSize($bytes, $round = 2){
 	$units = array('Byte', 'kB', 'MB', 'GB', 'TB');
-	$pow = floor(log($bytes)/log(1024));
-	$pow = min($pow, count($units)-1);
-	$bytes /= pow(1024,$pow);
+	if($bytes > 0){
+		$pow = floor(log($bytes)/log(1024));
+		$pow = min($pow, count($units)-1);
+		$bytes /= pow(1024,$pow);
+	}
+	else{
+		$pow = 0;
+	}
 	return round($bytes,$round)." ".$units[$pow];
 }
 
