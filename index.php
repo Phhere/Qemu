@@ -1,13 +1,8 @@
 <?php 
-session_start();
 include 'config.php';
 
-include 'classes/Image.class.php';
-include 'classes/QemuMonitor.class.php';
-include 'classes/PPM.class.php';
-include 'classes/QemuVm.php';
-include 'classes/User.class.php';
-include 'classes/login.php';
+include 'classes/Helper.class.php';
+Helper::loadClasses();
 
 $GLOBALS['site'] = "start";
 if(isset($_GET['site'])){
@@ -37,7 +32,7 @@ if(isset($_GET['site'])){
 	<li class="<?php echo (in_array($GLOBALS['site'],array("myvm"))) ? 'current' : '';?>"><a href="index.php?site=myvm">Meine VMs</a></li>
 	<li class="<?php echo (in_array($GLOBALS['site'],array("images","vms","users","system"))) ? 'current' : '';?>"><a href=""><span class="icon">R</span>Verwaltung</a>
 		<ul>
-		<li class="<?php echo (in_array($GLOBALS['site'],array("vms"))) ? 'current' : '';?>"><a href=""><span class="icon">4</span>Vms</a></li>
+		<li class="<?php echo (in_array($GLOBALS['site'],array("vms"))) ? 'current' : '';?>"><a href="index.php?site=vms"><span class="icon">4</span>Vms</a></li>
 		<li class="<?php echo (in_array($GLOBALS['site'],array("images"))) ? 'current' : '';?>"><a href="index.php?site=images"><span class="icon">D</span>Images</a></li>
 		<li class="divider <?php echo (in_array($GLOBALS['site'],array("users"))) ? 'current' : '';?>"><a href="index.php?site=users"><span class="icon">u</span>Benutzer</a></li>
 		<li class="divider <?php echo (in_array($GLOBALS['site'],array("system"))) ? 'current' : '';?>"><a href="index.php?site=system"><span class="icon">S</span>Einstellungen</a></li>

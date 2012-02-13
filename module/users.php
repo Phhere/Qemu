@@ -93,7 +93,7 @@ if(isset($_SESSION['user'])){
 					
 					echo '<tr>
 						<th>'.$ds['email'].'</th>
-						<td>'.getRoleName($ds['role']).'</td>
+						<td>'.Helper::getRoleName($ds['role']).'</td>
 						<td>'.$user_vms.'</td>
 						<td>'.$buttons.'</td>
 					</tr>';

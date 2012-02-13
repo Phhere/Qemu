@@ -186,7 +186,7 @@ class QemuVm {
 		}
 		else{
 			//$cmd = $cmd." > ".$GLOBALS['config']['log_path']."\\vm_".$this->vmID."_".date("d.m.Y H:i").".log &";
-			$cmd =  $cmd." &";
+			$cmd =  $cmd." > /dev/null &";
 			exec($cmd);
 		}
 	}

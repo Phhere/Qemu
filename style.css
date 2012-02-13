@@ -95,3 +95,6 @@ body {
 input[size]{
 	width: auto;
 }
+input.inline {
+	display:inline !important;
+}
