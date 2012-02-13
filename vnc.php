@@ -2,16 +2,12 @@
 session_start();
 include 'config.php';
 
-include 'classes/Image.class.php';
-include 'classes/QemuMonitor.class.php';
-include 'classes/PPM.class.php';
-include 'classes/QemuVm.php';
-include 'classes/User.class.php';
-include 'classes/login.php';
+include 'classes/Helper.class.php';
+Helper::loadClasses();
 
 if(isset($_SESSION['user'])){
 	$vmID = $_GET['vmID'];
-	if(isOwner($_GET['vmID'])){
+	if(Helper::isOwner($_GET['vmID'])){
 		$vm = new QemuVm($_GET['vmID']);
 		if($vm->status == QemuMonitor::RUNNING){
 			header("Cache-Control: public");
