@@ -29,6 +29,13 @@ class Helper {
 		*/
 		return true;
 	}
+	
+	static function getUserName($roleID){
+		$get = mysql_query("SELECT email FROM users WHERE userID='".$roleID."'");
+		$data = mysql_fetch_assoc($get);
+		return $data['email'];
+	}
+	
 	static function getRoleName($roleID){
 		$get = mysql_query("SELECT name FROM roles WHERE roleID='".$roleID."'");
 		$data = mysql_fetch_assoc($get);

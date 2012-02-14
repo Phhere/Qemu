@@ -90,7 +90,7 @@ body {
 }
 
 .no-margin {
-	margin-bottom: 0px !important;
+	margin-bottom: 2px !important;
 }
 input[size]{
 	width: auto;

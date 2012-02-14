@@ -36,7 +36,7 @@ class QemuVm {
 		$cmd .=" -L ".$GLOBALS['config']['qemu_bios_folder'];
 		$cmd .=" -m ".$this->ram;
 		$cmd .=" -".$this->imageType." ".$this->image;
-		$cmd .=" -soundhw all";
+		#$cmd .=" -soundhw all";
 		$cmd .=" -localtime";
 		$cmd .=" -monitor telnet:localhost:".$this->monitor_port.",server,nowait";
 		if($this->password != ""){

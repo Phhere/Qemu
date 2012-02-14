@@ -1,6 +1,7 @@
 <h3>Virtuelle Maschienen</h3>
 
 
+
 <?php
 if(isset($_SESSION['user'])){
 
@@ -12,12 +13,21 @@ if(isset($_SESSION['user'])){
 	}
 
 	if(isset($_POST['save'])){
-
+		if($_SESSION['user']->role['vm_create'] == 1){
+			mysql_query("INSERT INTO vm (owner,name,image,ram,password,params) VALUES
+			('".mysql_real_escape_string($_POST['owner'])."',
+			 '".mysql_real_escape_string($_POST['name'])."',
+			 '".mysql_real_escape_string($_POST['image'])."',
+			 '".mysql_real_escape_string($_POST['ram'])."',
+			 '".mysql_real_escape_string($_POST['password'])."',
+			 '".mysql_real_escape_string($_POST['params'])."')");
+			echo "<div class='notice success'>Die Daten wurden gespeichert.</div>";
+		}
 	}
 	elseif(isset($_POST['save_edit'])){
 		$id = $_POST['vm'];
 		if($_SESSION['user']->role['vm_edit'] == 1){
-			mysql_query("UPDATE vm SET owner='".mysql_real_escape_string($_POST['owner'])."', 
+			mysql_query("UPDATE vm SET owner='".mysql_real_escape_string($_POST['owner'])."',
 			name='".mysql_real_escape_string($_POST['name'])."', 
 			image='".mysql_real_escape_string($_POST['image'])."',
 			ram='".mysql_real_escape_string($_POST['ram'])."',
@@ -81,7 +91,37 @@ if(isset($_SESSION['user'])){
 		}
 	}
 	elseif($action == "new"){
-		$id = $_GET['vmID'];
+		if($_SESSION['user']->role['vm_create'] == 1){
+
+			$owner = '<option value="0">--</option>';
+			$get = mysql_query("SELECT userID, email FROM users");
+			while($ds = mysql_fetch_assoc($get)){
+				$owner .= '<option value="'.$ds['userID'].'">'.$ds['email'].'</option>';
+			}
+
+			$image = '<option value="0">--</option>';
+			$get = mysql_query("SELECT imageID,type,name FROM images");
+			while($ds = mysql_fetch_assoc($get)){
+				$image .= '<option value="'.$ds['imageID'].'">'.$ds['type'].' - '.$ds['name'].'</option>';
+			}
+
+
+			echo '<form action="index.php?site=vms" method="post">';
+			echo '<table cellspacing="0" cellpadding="0">
+												<thead><tr>
+										<th colspan="2">new VM</th>
+									</tr></thead>';
+			echo '<tr><td>Name:</td><td><input type="text" class="no-margin" value="" name="name"/></td></tr>';
+			echo '<tr><td>Owner:</td><td><select name="owner" class="no-margin">'.$owner.'</select></td></tr>';
+			echo '<tr><td>Image:</td><td><select name="image" class="no-margin">'.$image.'</select></td></tr>';
+			echo '<tr><td>Ram:</td><td><input type="text" class="no-margin inline" value="'.$GLOBALS['config']['default_ram'].'" name="ram" size="6"/> Mb</td></tr>';
+			echo '<tr><td>VNC Password:</td><td><input type="text" class="no-margin inline" value="" name="password"/></td></tr>';
+			echo '<tr><td>Optionale Parameter:</td><td><input type="text" class="no-margin inline" value="" name="params"/></td></tr>';
+			echo '</table>';
+			echo '<input type="submit" class="no-margin center" name="save" value="Speichern" />';
+			echo '</form>';
+		}
+
 	}
 	elseif($action == "edit"){
 		$id = $_GET['vmID'];
@@ -132,6 +172,9 @@ if(isset($_SESSION['user'])){
 
 	}
 	else{
+		
+		echo '<a href="index.php?site=vms&action=new" class="button no-margin small center grey "><span class="icon">+</span>neue VM</a>';
+		
 		$get = mysql_query("SELECT * FROM vm");
 		if(mysql_num_rows($get)){
 			echo '<table cellspacing="0" cellpadding="0">
@@ -159,7 +202,7 @@ if(isset($_SESSION['user'])){
 					$buttons .='<a href="index.php?site=vms&action=clone&vmID='.$ds['vmID'].'" class="button small center grey no-margin"><span class="icon">R</span>Clone</a>';
 				}
 				echo '<tr>
-	<th>'.$ds['name'].'</th>
+	<th>'.$ds['name'].'<br/><small>'.Helper::getUserName($ds['owner']).'</small></th>
 	<td>'.Image::getImagePath($ds['image']).'</td>
 	<td>'.$ds['ram'].' MB</td>
 	<td>'.$lastrun.'</td>
