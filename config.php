@@ -1,4 +1,5 @@
 <?php
+session_start();
 
 mysql_connect("localhost","user","pass");
 mysql_select_db("qemu");

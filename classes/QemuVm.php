@@ -38,12 +38,12 @@ class QemuVm {
 		$cmd .=" -".$this->imageType." ".$this->image;
 		$cmd .=" -soundhw all";
 		$cmd .=" -localtime";
-		$cmd .=" -M isapc";
 		$cmd .=" -monitor telnet:localhost:".$this->monitor_port.",server,nowait";
-		$cmd .=" -vnc :".$this->vmID;
+		if($this->password != ""){
+			$cmd .=" -vnc :".$this->vmID.",password";
+		}
 			
 		$this->executeStart($cmd);
-		$this->setStatus(QemuMonitor::RUNNING);
 		mysql_query("UPDATE vm SET lastrun=NOW() WHERE vmID='".$this->vmID."'");
 	}
 
@@ -59,6 +59,9 @@ class QemuVm {
 	public function connect(){
 		$this->monitor = new QemuMonitor($this->host, $this->monitor_port);
 		$this->setStatus(QemuMonitor::RUNNING);
+		if($this->password != ""){
+			$this->setVncPassword($this->password);
+		}
 	}
 	/**
 	 * Get the current status from Qemu
@@ -173,21 +176,20 @@ class QemuVm {
 			return false;
 		}
 	}
-
+	/**
+	 * Execute the Start Command and run in background without waiting for the output
+	 * @param String $cmd
+	 */
 	private function executeStart($cmd){
-		/**
-		 * @Todo logging einbauen
-		 * $cmd = $cmd.">".$GLOBALS['config']['log_path']."\\vm_".$this->vmID."_".date("d_m_Y_H_i").".log";
-		 */
 		if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+			$cmd = "cmd /c ".$cmd." >> ".chr(34).$GLOBALS['config']['log_path'].'\vm_'.$this->vmID."_".date("Y_m_d").".log".chr(34)." 2>&1";
 			$WshShell = new COM("WScript.Shell");
-			//$cmd = $cmd.">".$GLOBALS['config']['log_path']."\\vm_".$this->vmID."_".date("d_m_Y_H_i").".log";
 			$WshShell->Run($cmd, 0, false);
 		}
 		else{
-			//$cmd = $cmd." > ".$GLOBALS['config']['log_path']."\\vm_".$this->vmID."_".date("d.m.Y H:i").".log &";
-			$cmd =  $cmd." > /dev/null &";
+			$cmd = $cmd." > ".$GLOBALS['config']['log_path'].'\vm_'.$this->vmID."_".date("Y_m_d").".log &";
 			exec($cmd);
 		}
+		echo $cmd;
 	}
 }

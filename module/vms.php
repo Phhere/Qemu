@@ -1,5 +1,6 @@
 <h3>Virtuelle Maschienen</h3>
 
+
 <?php
 if(isset($_SESSION['user'])){
 
@@ -8,6 +9,25 @@ if(isset($_SESSION['user'])){
 	}
 	else {
 		$action = null;
+	}
+
+	if(isset($_POST['save'])){
+
+	}
+	elseif(isset($_POST['save_edit'])){
+		$id = $_POST['vm'];
+		if($_SESSION['user']->role['vm_edit'] == 1){
+			mysql_query("UPDATE vm SET owner='".mysql_real_escape_string($_POST['owner'])."', 
+			name='".mysql_real_escape_string($_POST['name'])."', 
+			image='".mysql_real_escape_string($_POST['image'])."',
+			ram='".mysql_real_escape_string($_POST['ram'])."',
+			password='".mysql_real_escape_string($_POST['password'])."',
+			params='".mysql_real_escape_string($_POST['params'])."' WHERE vmID='".$id."'");
+			echo "<div class='notice success'>Die Daten wurden gespeichert.</div>";
+		}
+	}
+	elseif(isset($_POST['clone'])){
+
 	}
 
 	if($action == "start"){
@@ -60,8 +80,53 @@ if(isset($_SESSION['user'])){
 			echo "<div class='notice error'>Sie besitzen nicht die Rechte die VM zu stoppen</div>";
 		}
 	}
+	elseif($action == "new"){
+		$id = $_GET['vmID'];
+	}
 	elseif($action == "edit"){
+		$id = $_GET['vmID'];
+		$get = mysql_query("SELECT * FROM vm WHERE vmID='".$id."'");
+		if(mysql_num_rows($get)){
+			$data = mysql_fetch_array($get);
+			if($data['status'] == QemuMonitor::SHUTDOWN){
+				$owner = '';
+				$get = mysql_query("SELECT userID, email FROM users");
+				while($ds = mysql_fetch_assoc($get)){
+					$owner .= '<option value="'.$ds['userID'].'">'.$ds['email'].'</option>';
+				}
 
+				$owner = str_replace('value="'.$data['owner'].'"','value="'.$data['owner'].'" selected="selected"',$owner);
+
+				$image = '';
+				$get = mysql_query("SELECT imageID,type,name FROM images");
+				while($ds = mysql_fetch_assoc($get)){
+					$image .= '<option value="'.$ds['imageID'].'">'.$ds['type'].' - '.$ds['name'].'</option>';
+				}
+
+				$image = str_replace('value="'.$data['image'].'"','value="'.$data['image'].'" selected="selected"',$image);
+
+				echo '<form action="index.php?site=vms" method="post">';
+				echo '<table cellspacing="0" cellpadding="0">
+										<thead><tr>
+								<th colspan="2">edit VM</th>
+							</tr></thead>';
+				echo '<tr><td>Name:</td><td><input type="text" class="no-margin" value="'.$data['name'].'" name="name"/></td></tr>';
+				echo '<tr><td>Owner:</td><td><select name="owner" class="no-margin">'.$owner.'</select></td></tr>';
+				echo '<tr><td>Image:</td><td><select name="image" class="no-margin">'.$image.'</select></td></tr>';
+				echo '<tr><td>Ram:</td><td><input type="text" class="no-margin inline" value="'.$data['ram'].'" name="ram" size="6"/> Mb</td></tr>';
+				echo '<tr><td>VNC Password:</td><td><input type="text" class="no-margin inline" value="'.$data['password'].'" name="password"/></td></tr>';
+				echo '<tr><td>Optionale Parameter:</td><td><input type="text" class="no-margin inline" value="'.$data['params'].'" name="params"/></td></tr>';
+				echo '</table>';
+				echo '<input type="hidden" name="vm" value="'.$data['vmID'].'"/><input type="submit" class="no-margin center" name="save_edit" value="Speichern" />';
+				echo '</form>';
+			}
+			else{
+				echo "<div class='notice warning'>Die VM scheint zu laufen und kann so nicht bearbeitet werden.</div>";
+			}
+		}
+		else{
+			echo "<div class='notice error'>Es existiert keine VM mit dieser ID</div>";
+		}
 	}
 	elseif($action == "clone"){
 
@@ -89,7 +154,7 @@ if(isset($_SESSION['user'])){
 					$buttons .='<a href="vnc.php?vmID='.$ds['vmID'].'"class="button small center grey  no-margin"><span class="icon">0</span>VNC</a>';
 				}
 				else{
-					$buttons  = '<a href="index.php?site=vms&action=start&vmID='.$ds['vmID'].'" class="button green small center no-margin"><span class="icon">&nbsp;</span>Start</a>';
+					$buttons = '<a href="index.php?site=vms&action=start&vmID='.$ds['vmID'].'" class="button green small center no-margin"><span class="icon">&nbsp;</span>Start</a>';
 					$buttons .='<a href="index.php?site=vms&action=edit&vmID='.$ds['vmID'].'" class="button small center grey no-margin"><span class="icon">G</span>Edit</a>';
 					$buttons .='<a href="index.php?site=vms&action=clone&vmID='.$ds['vmID'].'" class="button small center grey no-margin"><span class="icon">R</span>Clone</a>';
 				}
