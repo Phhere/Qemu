@@ -1,0 +1,23 @@
+<table cellspacing="0" cellpadding="0">
+	<thead>
+		<tr>
+			<th width="80"></th>
+			<th>Image</th>
+			<th>Ram</th>
+			<th width="120">Last Run</th>
+			<th width="140">Options</th>
+		</tr>
+	</thead>
+	{if condition="is_array($vms)"} {loop="vms"}
+	<tr>
+		<th>{$value.name}</th>
+		<th>{$value.image}</th>
+		<td>{$value.ram}</td>
+		<td>{$value.lastrun}</td>
+		<td>{$value.buttons}</td>
+	</tr>
+	{/loop} 
+	{else} 
+		{$vms} 
+	{/if}
+</table>

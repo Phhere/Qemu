@@ -1,5 +1,3 @@
-<h3>Systemverwaltung</h3>
-
 <?php
 if(isset($_SESSION['user'])){
 	if($_SESSION['user']->role['system'] == 1){
@@ -9,13 +7,11 @@ if(isset($_SESSION['user'])){
 
 		$images=mysql_num_rows(mysql_query("SELECT imageID FROM images"));
 
-		echo '<div class="col_5"><h4>VM Status</h4>
-		VMs: '.$data['vms'].'<br/>
-		VMs online: '.$data['vms_on'].'<br/>
-		Images: '.$images.'
-		</div>';
-		echo '<div class="col_2"></div>';
-
+		$tmp = new RainTPL();
+		$tmp->assign('vms',$data['vms']);
+		$tmp->assign('vms_on',$data['vms_on']);
+		$tmp->assign('images',$images);
+		
 		$ram = Helper::getRamSettings();
 		if($ram){
 			$ram_usage = FileSystem::formatFileSize($ram['used']).' / '.FileSystem::formatFileSize($ram['all']);
@@ -24,6 +20,8 @@ if(isset($_SESSION['user'])){
 			$ram_usage = 'linux only';
 		}
 
+		$tmp->assign('ram_usage',$ram_usage);
+		
 		$cpu = Helper::getCPUusage();
 		if($cpu){
 			$cpu_usage = implode(" ",array_values($cpu));
@@ -31,15 +29,19 @@ if(isset($_SESSION['user'])){
 		else{
 			$cpu_usage = 'linux only';
 		}
+		
+		$tmp->assign('cpu_usage',$cpu_usage);
 
-		echo '<div class="col_5"><h4>Server Status</h4>
-		CPU: '.$cpu_usage.'<br/>
-		Ram: '.$ram_usage.'<br/>
-		HDD: '.FileSystem::formatFileSize(disk_free_space ('/')).' / '.FileSystem::formatFileSize(disk_total_space('/')).'<br/>
-		Qemu Ram: '.FileSystem::getDirectorySize('/dev/shm',true).'</div>';
-
-		echo '<h4>Einstellungen</h4>';
-
+		$free = FileSystem::formatFileSize(disk_free_space ('/'));
+		$all = FileSystem::formatFileSize(disk_total_space('/'));
+		
+		$tmp->assign('free',$free);
+		$tmp->assign('all',$all);
+		
+		$qemu_ram = FileSystem::getDirectorySize('/dev/shm',true);
+		$tmp->assign('ram_qemu',$qemu_ram);
+		
+		
 		if(isset($_POST['save'])){
 			foreach($_POST as $key => $value){
 				if(isset($GLOBALS['config'][$key])){
@@ -47,58 +49,28 @@ if(isset($_SESSION['user'])){
 					$GLOBALS['config'][$key] = $value;
 				}
 			}
-			echo "<div class='notice success'>Einstellungen gespeichert</div>";
+			$tmp->assign('message',"<div class='notice success'>Einstellungen gespeichert</div>");
 		}
 
-		echo "<form method='post'>";
-
-		echo '<table cellspacing="0" cellpadding="0">
-<thead><tr>
-<th>Einstellung</th>
-<th>Wert</th>
-</tr></thead>';
-
-		echo '<tr>
-<td>Qemu Executable</td>
-<td><input type="text" class="no-margin" name="qemu_executable" value="'.$GLOBALS['config']['qemu_executable'].'" /></td>
-</tr>';
-		echo '<tr>
-<td>Qemu Bios Folder</td>
-<td><input type="text" class="no-margin" name="qemu_bios_folder" value="'.$GLOBALS['config']['qemu_bios_folder'].'" /></td>
-</tr>';
-
-		echo '<tr>
-<td>Qemu Image Folder</td>
-<td><input type="text" class="no-margin" name="qemu_image_folder" value="'.$GLOBALS['config']['qemu_image_folder'].'" /></td>
-</tr>';
-
-		echo '<tr>
-<td>Qemu Monitor Startport</td>
-<td><input type="text" class="no-margin" size="6" name="monitorport_min" value="'.$GLOBALS['config']['monitorport_min'].'" /></td>
-</tr>';
-
-		echo '<tr>
-<td>VNC Startport</td>
-<td><input type="text" class="no-margin" size="6" name="vncport_min" value="'.$GLOBALS['config']['vncport_min'].'" /></td>
-</tr>';
-
-		echo '<tr>
-<td>Log Path</td>
-<td><input type="text" class="no-margin" name="log_path" value="'.$GLOBALS['config']['log_path'].'" /></td>
-</tr>';
-		echo '<tr>
-<td>Max Ram Usage</td>
-<td><input type="text" class="no-margin inline" name="max_ram" size="4" value="'.$GLOBALS['config']['max_ram'].'" /> Gb</td>
-</tr>';
-
-		echo '</table>';
-		echo '<input type="submit" class="no-margin center" name="save" value="Speichern" />';
-		echo '</form>';
+		
+		$roles = '';
+		$get = mysql_query("SELECT * FROM roles");
+		while($ds = mysql_fetch_assoc($get)){
+			if($ds['roleID'] == $GLOBALS['config']['default_role']) $selected = "selected='selected'";
+			else $selected = '';
+			$roles .= '<option value="'.$ds['roleID'].'" '.$selected.'>'.$ds['name'].'</option>';
+		}
+		$tmp->assign('roles',$roles);
+		foreach($GLOBALS['config'] as $key => $value){
+			$tmp->assign($key,$value);
+		}
+		
+		$GLOBALS['template']->assign('content',$tmp->draw('system',true));
 	}
 	else{
-		echo "<div class='notice warning'>Sie haben keinen Zugriff.</div>";
+		$GLOBALS['template']->assign('content',"<div class='notice warning'>Sie haben keinen Zugriff.</div>");
 	}
 }
 else{
-	echo "<div class='notice warning'>Sie müssen eingeloggt sein</div>";
+	$GLOBALS['template']->assign('content',"<div class='notice warning'>Sie müssen eingeloggt sein</div>");
 }

@@ -64,4 +64,27 @@ class Helper {
 			return array('last1'=>$values[0],'last5'=>$values[1],'last15'=>$values[2]);
 		}
 	}
+	
+	static function generatePassword($length) {
+	
+		$pass = '';
+		
+		for ($i = 0; $i < $length; $i++) {
+	
+			$rand = rand(1,3);
+		
+			switch($rand) {
+				case 1: 
+					$pass .= chr(rand(48,57)); 
+					break;
+				case 2: 
+					$pass .= chr(rand(65,90)); 
+					break;
+				default: 
+					$pass .= chr(rand(97,122)); 
+					break;
+			}
+		}
+		return $pass;
+	}
 }

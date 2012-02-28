@@ -1,5 +1,5 @@
-<h3>Meine VMs</h3>
 <?php
+$tmp = $GLOBALS['template'];
 if(isset($_SESSION['user'])){
 	
 	if(isset($_GET['action'])){
@@ -14,7 +14,7 @@ if(isset($_SESSION['user'])){
 			if(Helper::isOwner($_GET['vmID'])){
 				$vm = new QemuVm($_GET['vmID']);
 				if($vm->status == QemuMonitor::RUNNING){
-					echo "<div class='notice'>Die VM scheint bereits aus zu laufen.</div>";
+					$tmp->assign('message',"<div class='notice'>Die VM scheint bereits aus zu laufen.</div>");
 				}
 				else{
 					$vm->startVM();
@@ -22,17 +22,17 @@ if(isset($_SESSION['user'])){
 						$vm->connect();
 					}
 					catch(Exception $e){
-						echo "<div class='notice warning'>Die VM scheint nicht zu starten.</div>";
+						$tmp->assign('message',"<div class='notice warning'>Die VM scheint nicht zu starten.</div>");
 						$vm->setStatus(QemuMonitor::SHUTDOWN);
 					}
 					if(!isset($e)){
-						echo "<div class='notice success'>Die VM wurde gestartet.</div>";
+						$tmp->assign('message',"<div class='notice success'>Die VM wurde gestartet.</div>");
 					}
 				}
 			}
 		}
 		else{
-			echo "<div class='notice error'>Es sind keine Ressourcen mehr verfügbar um die VM zu starten</div>";
+			$tmp->assign('message',"<div class='notice error'>Es sind keine Ressourcen mehr verfügbar um die VM zu starten</div>");
 		}
 	}
 	elseif($action == "stop"){
@@ -43,33 +43,28 @@ if(isset($_SESSION['user'])){
 					$vm->connect();
 				}
 				catch(Exception $e){
-					echo "<div class='notice warning'>Die VM scheint bereits aus zu sein.</div>";
+					$tmp->assign('message',"<div class='notice warning'>Die VM scheint bereits aus zu sein.</div>");
 					$vm->setStatus(QemuMonitor::SHUTDOWN);
 				}
 				if(!isset($e)){
 					$vm->shutdown();
-					echo "<div class='notice success'>Die VM wird ausgeschaltet.</div>";
+					$tmp->assign('message',"<div class='notice success'>Die VM wird ausgeschaltet.</div>");
 				}
 			}
 			else{
-				echo "<div class='notice warning'>Die VM scheint bereits aus zu sein.</div>";
+				$tmp->assign('message',"<div class='notice warning'>Die VM scheint bereits aus zu sein.</div>");
 			}
 		}
 		else{
-			echo "<div class='notice error'>Sie besitzen nicht die Rechte die VM zu stoppen</div>";
+			$tmp->assign('message',"<div class='notice error'>Sie besitzen nicht die Rechte die VM zu stoppen</div>");
 		}
 	}
 	
+	$tmp2 = new RainTPL();
+	
 	$get = mysql_query("SELECT * FROM vm WHERE owner = '".$_SESSION['user']->id."'");
 	if(mysql_num_rows($get)){
-		echo '<table cellspacing="0" cellpadding="0">
-<thead><tr>
-	<th width="80"> </th>
-	<th>Image</th>
-	<th>Ram</th>
-	<th width="120">Last Run</th>
-	<th width="140">Options</th>
-</tr></thead>';
+		$vms = array();
 		while($ds = mysql_fetch_assoc($get)){
 			if($ds['lastrun'] != '0000-00-00'){
 				$lastrun = date("d.m.Y H:i", strtotime($ds['lastrun']));
@@ -85,20 +80,22 @@ if(isset($_SESSION['user'])){
 				$buttons  = '<a href="index.php?site=myvm&action=start&vmID='.$ds['vmID'].'" class="button green small center no-margin"><span class="icon">&nbsp;</span>Start</a>';
 				$buttons .='<a class="button small center grey no-margin"><span class="icon">G</span>Edit</a>';
 			}
-			echo '<tr>
-	<th>'.$ds['name'].'</th>
-	<td>'.Image::getImagePath($ds['image']).'</td>
-	<td>'.$ds['ram'].' MB</td>
-	<td>'.$lastrun.'</td>
-	<td>'.$buttons.'</td>
-</tr>';
+			$vm = array();
+			$vm['lastrun'] = $lastrun;
+			$vm['buttons'] = $buttons;
+			$vm['name'] = $ds['name'];
+			$vm['image'] = Image::getImagePath($ds['image']);
+			$vm['ram'] = FileSystem::formatFileSize($ds['ram']*1024*1024,0);
+			$vms[] = $vm;
 		}
-		echo '</table>';
+		$tmp2->assign('vms',$vms);
+		$tmp->assign('content',$tmp2->draw('myvm_table',true));
 	}
 	else{
-		echo "Du hast noch keine VM. Du musst warten bis dir eine zugeteilt wird von den Admins.";
+		$tmp->assign('content',"Du hast noch keine VM. Du musst warten bis dir eine zugeteilt wird von den Admins.");
 	}
 }
 else{
-	echo "Du musst dich einloggen um diese Funktion zu nutzen.";
+	$tmp->assign('content',"Du musst dich einloggen um diese Funktion zu nutzen.");
 }
+$GLOBALS['template']->assign('content',$tmp->draw('myvm',true));

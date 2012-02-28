@@ -1,0 +1,24 @@
+<a href="index.php?site=images&action=new" class="button no-margin small center grey "><span class="icon">+</span>neues Image</a>
+
+<table cellspacing="0" cellpadding="0">
+	<thead>
+		<tr>
+			<th width="100"></th>
+			<th width="200">Type</th>
+			<th width="120">Options</th>
+		</tr>
+	</thead>
+	{if condition="is_array($vms)"}
+	{loop="vms"}
+	<tr>
+		<th>{$value.name}</th>
+		<td>{$value.path}<br />
+		<small>{$value.type}</small>
+		</td>
+		<td>{$value.buttons}</td>
+	</tr>
+	{/loop}
+	{else}
+		{$vms}
+	{/if}
+</table>

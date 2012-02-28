@@ -1,0 +1,28 @@
+<form action="index.php?site=images" method="post">
+	<table cellspacing="0" cellpadding="0">
+		<thead>
+			<tr>
+				<th colspan="2">new Image</th>
+			</tr>
+		</thead>
+		<tr>
+			<td>Name:</td>
+			<td>
+				<input type="text" class="no-margin" name="name" value="{$name}" />
+			</td>
+		</tr>
+		<tr>
+			<td>Type:</td>
+			<td>
+				<select class="no-margin" name="type">{$types}</select>
+			</td>
+		</tr>
+		<tr>
+			<td>Path:</td>
+			<td>
+				<input type="text" class="no-margin" name="path" value="{$path}" />
+			</td>
+		</tr>
+	</table>
+	<input type="submit" class="no-margin center" name="save_new" value="Speichern" />
+</form>
