@@ -1,0 +1,26 @@
+<form action="index.php?site=users" method="post">
+	<table class="striped">
+		<thead>
+			<tr>
+				<th colspan="2">new User</th>
+			</tr>
+		</thead>
+		<tr>
+			<th width="30%">Email:</th>
+			<td><input type="input" name="email" />
+			</td>
+		</tr>
+		<tr>
+			<th>Role:</th>
+			<td>
+				<select class="no-margin" name="role">{$roles}</select>
+			</td>
+		</tr>
+		<tr>
+			<th>Password:</th>
+			<td><input type="input" name="pass" value="{$pass}" />
+			</td>
+		</tr>
+	</table>
+	<input type="submit" class="no-margin center" name="save_new" value="Speichern" />
+</form>

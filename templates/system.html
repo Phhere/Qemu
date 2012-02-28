@@ -15,7 +15,7 @@
 {if condition="isset($message)"} {$message} {/if}
 
 <form method='post'>
-	<table cellspacing="0" cellpadding="0">
+	<table class="striped">
 		<thead>
 			<tr>
 				<th>Einstellung</th>
@@ -23,39 +23,43 @@
 			</tr>
 		</thead>
 		<tr>
-			<td>Qemu Executable</td>
+			<th width="30%">Qemu Executable</th>
 			<td><input type="text" class="no-margin" name="qemu_executable" value="{$qemu_executable}" /></td>
 		</tr>
 		<tr>
-			<td>Qemu Bios Folder</td>
+			<th>Qemu-Img Executable</th>
+			<td><input type="text" class="no-margin" name="qemu_img_executable" value="{$qemu_img_executable}" /></td>
+		</tr>
+		<tr>
+			<th>Qemu Bios Folder</th>
 			<td><input type="text" class="no-margin" name="qemu_bios_folder" value="{$qemu_bios_folder}" /></td>
 		</tr>
 		<tr>
-			<td>Qemu Image Folder</td>
+			<th>Qemu Image Folder</th>
 			<td><input type="text" class="no-margin" name="qemu_image_folder" value="{$qemu_image_folder}" /></td>
 		</tr>
 		<tr>
-			<td>Qemu Monitor Startport</td>
+			<th>Qemu Monitor Startport</th>
 			<td><input type="text" class="no-margin" size="6" name="monitorport_min" value="{$monitorport_min}" /></td>
 		</tr>
 		<tr>
-			<td>VNC Startport</td>
+			<th>VNC Startport</th>
 			<td><input type="text" class="no-margin" size="6" name="vncport_min" value="{$vncport_min}" /></td>
 		</tr>
 		<tr>
-			<td>Log Path</td>
+			<th>Log Path</th>
 			<td><input type="text" class="no-margin" name="log_path" value="{$log_path}" /></td>
 		</tr>
 		<tr>
-			<td>Max Ram Usage</td>
+			<th>Max Ram Usage</th>
 			<td><input type="text" class="no-margin inline" name="max_ram" size="4" value="{$max_ram}" /> Gb</td>
 		</tr>
 		<tr>
-			<td>Default Ram for VM</td>
+			<th>Default Ram for VM</th>
 			<td><input type="text" class="no-margin inline" name="default_ram" size="4" value="{$default_ram}" /> Mb</td>
 		</tr>
 		<tr>
-			<td>Default Role</td>
+			<th>Default Role</th>
 			<td>
 				<select name="default_role" class="no-margin inline">{$roles}</select>
 			</td>

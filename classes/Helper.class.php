@@ -87,4 +87,5 @@ class Helper {
 		}
 		return $pass;
 	}
+	
 }

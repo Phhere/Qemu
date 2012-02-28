@@ -27,7 +27,6 @@ src: url('fonts/social/icomoonsocial-webfont.eot?#iefix') format('embedded-opent
 .icon{
 height:0.8em;
 width:0.8em;
-overflow:hidden;
 display:inline-block;
 font-size:21px;
 color:inherit;
@@ -43,6 +42,7 @@ top:-3px;
 left:0;
 -webkit-font-smoothing: antialiased;
 zoom:1;
+display:none;
 }
 
 .msie .icon{top:-1px;}/* IE ONLY - I know :P */

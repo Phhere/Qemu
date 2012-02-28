@@ -1,3 +1,5 @@
+<a href="index.php?site=vms&action=new" class="button no-margin small center grey "><span class="icon" data-icon="+"></span>neue VM</a>
+
 <table class="striped">
 	<thead>
 		<tr>
@@ -10,14 +12,13 @@
 	</thead>
 	{if condition="is_array($vms)"} {loop="vms"}
 	<tr>
-		<th>{$value.name}</th>
-		<th>{$value.image}</td>
+		<th>{$value.name}<br />
+		<small>{$value.owner}</small>
+		</th>
+		<td>{$value.image}</td>
 		<td>{$value.ram}</td>
 		<td>{$value.lastrun}</td>
 		<td>{$value.buttons}</td>
 	</tr>
-	{/loop} 
-	{else} 
-		{$vms} 
-	{/if}
+	{/loop} {else} {$vms} {/if}
 </table>

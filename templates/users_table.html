@@ -1,0 +1,21 @@
+<a href="index.php?site=users&action=new" class="button no-margin small center grey "><span class="icon" data-icon="+"></span>neuer User</a>
+
+<table class="striped">
+			<thead><tr>
+				<th width="100"> </th>
+				<th width="100">Role</th>
+				<th>VMs</th>
+				<th width="250">Options</th>
+			</tr></thead>
+	{if condition="is_array($users)"} {loop="users"}
+	<tr>
+		<th>{$value.mail}</th>
+		<td>{$value.role}</td>
+		<td>{$value.vms}</td>
+		<td>{$value.buttons}</td>
+	</tr>
+	{/loop} 
+	{else} 
+		{$users} 
+	{/if}
+</table>

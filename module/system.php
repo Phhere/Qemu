@@ -32,14 +32,19 @@ if(isset($_SESSION['user'])){
 		
 		$tmp->assign('cpu_usage',$cpu_usage);
 
-		$free = FileSystem::formatFileSize(disk_free_space ('/'));
-		$all = FileSystem::formatFileSize(disk_total_space('/'));
+		$free = disk_free_space ('/');
+		$all = disk_total_space('/');
 		
-		$tmp->assign('free',$free);
-		$tmp->assign('all',$all);
+		$tmp->assign('free',FileSystem::formatFileSize($all-$free));
+		$tmp->assign('all',FileSystem::formatFileSize($all));
 		
-		$qemu_ram = FileSystem::getDirectorySize('/dev/shm',true);
-		$tmp->assign('ram_qemu',$qemu_ram);
+		$qemu_ram = FileSystem::getDirectorySize('/dev/shm');
+		if($qemu_ram != -1){
+			$tmp->assign('ram_qemu',FileSystem::formatFileSize($qemu_ram));
+		}
+		else{
+			$tmp->assign('ram_qemu','linux only');
+		}
 		
 		
 		if(isset($_POST['save'])){

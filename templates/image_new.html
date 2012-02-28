@@ -1,28 +1,54 @@
 <form action="index.php?site=images" method="post">
-	<table cellspacing="0" cellpadding="0">
+	<table class="striped">
 		<thead>
 			<tr>
 				<th colspan="2">new Image</th>
 			</tr>
 		</thead>
 		<tr>
-			<td>Name:</td>
-			<td>
-				<input type="text" class="no-margin" name="name" value="{$name}" />
-			</td>
+			<th>Name:</th>
+			<td><input type="text" class="no-margin" name="name" value="{$name}" /></td>
 		</tr>
 		<tr>
-			<td>Type:</td>
-			<td>
-				<select class="no-margin" name="type">{$types}</select>
-			</td>
-		</tr>
-		<tr>
-			<td>Path:</td>
-			<td>
-				<input type="text" class="no-margin" name="path" value="{$path}" />
-			</td>
+			<th>Type:</th>
+			<td><select class="no-margin" name="type">{$types}
+			</select></td>
 		</tr>
 	</table>
+	<ul class="tabs left">
+		<li><a href="#tab1">Existing file</a>
+		</li>
+		<li><a href="#tab2">Create via Qemu-Img</a>
+		</li>
+	</ul>
+	<div id="tab1" class="tab-content">
+		<table class="striped">
+			<tr>
+				<th width="30%">Path:</th>
+				<td><input type="text" class="no-margin" name="path" value="{$path}" /></td>
+			</tr>
+		</table>
+	</div>
+	<div id="tab2" class="tab-content">
+		<table class="striped">
+			<tr>
+				<th width="30%">Path:</th>
+				<td><input type="text" class="no-margin" name="path" value="{$path}" />
+				</td>
+			</tr>
+			<tr>
+				<th>Type:</th>
+				<td>
+					<select name="create_type" class="no-margin">{$create_type}</select>
+				</td>
+			</tr>
+			<tr>
+				<th>Size:</th>
+				<td>
+					<input name="create_size" value="{$create_size}" size="6" class="no-margin small" /><small>Suffixes "M"(Megabyte) and "G"(Gigabyte)</small>
+				</td>
+			</tr>
+		</table>
+	</div>
 	<input type="submit" class="no-margin center" name="save_new" value="Speichern" />
 </form>

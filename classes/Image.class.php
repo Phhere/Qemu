@@ -10,4 +10,26 @@ class Image {
 		$data = mysql_fetch_assoc($get);
 		return $data['type'];
 	}
+	static function getStatus($imageID){
+		$path = self::getImagePath($imageID);
+		$cmd = "H:\Web\htdocs\Qemu\bin\qemu-img.exe info ".$path;
+		exec($cmd,$output);
+		$return = array();
+		foreach($output as $line){
+			list($key,$value) = explode(": ",$line,2);
+			switch($key){
+				case 'file format':
+					$return['type'] = $value;
+					break;
+				case 'virtual size':
+					preg_match("/([0-9]*?) bytes/s",$value,$match);
+					$return['virtual_size'] = $match[1];
+					break;
+				case 'disk size':
+					$return['real_size'] = $value;
+					break;
+			}
+		}
+		return $return;
+	}
 }

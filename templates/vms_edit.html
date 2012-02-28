@@ -1,0 +1,50 @@
+<form action="index.php?site=vms" method="post">
+	<table class="striped">
+		<thead>
+			<tr>
+				<th colspan="2">new VM</th>
+			</tr>
+		</thead>
+		<tr>
+			<th width="30%">Name:</th>
+			<td><input type="text" class="no-margin" value="{$name}" name="name" />
+			</td>
+		</tr>
+		<tr>
+			<th>Owner:</th>
+			<td>
+				<select name="owner" class="no-margin">
+					{$owner}
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<th>Image:</th>
+			<td>
+				<select name="image" class="no-margin">
+					{$image}
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<th>Ram:</th>
+			<td>
+				<input type="text" class="no-margin inline" value="{$ram}" name="ram" size="6" /> Mb
+			</td>
+		</tr>
+		<tr>
+			<th>VNC Password:</th>
+			<td>
+				<input type="text" class="no-margin inline" value="{$password}" name="password" />
+			</td>
+		</tr>
+		<tr>
+			<th>Optionale Parameter:</th>
+			<td>
+				<input type="text" class="no-margin inline" value="{$params}" name="params" />
+			</td>
+		</tr>
+	</table>
+	<input type="hidden" name="vm" value="{$vmID}"/>
+	<input type="submit" class="no-margin center" name="save_edit" value="Speichern" />
+</form>

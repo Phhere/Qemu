@@ -1,0 +1,17 @@
+<form action="index.php?site=users" method="post">
+	<table class="striped">
+		<thead>
+			<tr>
+				<th colspan="2">{$email}</th>
+			</tr>
+		</thead>
+		<tr>
+			<th width="30%">Role:</th>
+			<td>
+				<select class="no-margin" name="role">{$role}</select>
+			</td>
+		</tr>
+	</table>
+	<input type="hidden" name="user" value="{$userID}" />
+	<input type="submit" class="no-margin center" name="save_edit" value="Speichern" />
+</form>
