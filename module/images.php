@@ -41,7 +41,7 @@ if(isset($_SESSION['user'])){
 		}
 		elseif($action =='delete'){
 			$id = $_GET['image'];
-			if(mysql_num_rows(mysql_query("SELECT vmID FROM vm WHERE status='".QemuMonitor::RUNNING."' AND image='".$id."'"))){
+			if(mysql_num_rows(mysql_query("SELECT vmID FROM vm WHERE status='".QemuMonitor::RUNNING."' AND image='".mysql_real_escape_string($id)."'"))){
 				$tmp->assign('message','<div class="notice notice">Das Image wird noch in einer VM genutzt</div>');
 			}
 			else{
@@ -108,7 +108,7 @@ if(isset($_SESSION['user'])){
 			if($_SESSION['user']->role['image_edit'] == 1){
 				
 				$image = $_GET['image'];
-				$get = mysql_query("SELECT * FROM images WHERE imageID='".$image."'");
+				$get = mysql_query("SELECT * FROM images WHERE imageID='".mysql_real_escape_string($image)."'");
 				if(mysql_num_rows($get)){
 					$data = mysql_fetch_assoc($get);
 					$types = '<option value="cdrom">CD-ROM</option>';
@@ -134,7 +134,7 @@ if(isset($_SESSION['user'])){
 		}
 		elseif($action == 'status'){
 			$image = $_GET['image'];
-			$get = mysql_query("SELECT * FROM images WHERE imageID='".$image."'");
+			$get = mysql_query("SELECT * FROM images WHERE imageID='".mysql_real_escape_string($image)."'");
 			if(mysql_num_rows($get)){
 				$data = mysql_fetch_assoc($get);
 				

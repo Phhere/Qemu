@@ -11,13 +11,14 @@ if(isset($_SESSION['user'])){
 
 	if(isset($_POST['save'])){
 		if($_SESSION['user']->role['vm_create'] == 1){
-			mysql_query("INSERT INTO vm (owner,name,image,ram,password,params) VALUES
+			mysql_query("INSERT INTO vm (owner,name,image,ram,password,params,persistent) VALUES
 			('".mysql_real_escape_string($_POST['owner'])."',
 			 '".mysql_real_escape_string($_POST['name'])."',
 			 '".mysql_real_escape_string($_POST['image'])."',
 			 '".mysql_real_escape_string($_POST['ram'])."',
 			 '".mysql_real_escape_string($_POST['password'])."',
-			 '".mysql_real_escape_string($_POST['params'])."')");
+			 '".mysql_real_escape_string($_POST['params'])."',
+			 '".isset($_POST['persistent'])."')");
 			$tmp->assign('message',"<div class='notice success'>Die Daten wurden gespeichert.</div>");
 		}
 	}
@@ -29,7 +30,9 @@ if(isset($_SESSION['user'])){
 			image='".mysql_real_escape_string($_POST['image'])."',
 			ram='".mysql_real_escape_string($_POST['ram'])."',
 			password='".mysql_real_escape_string($_POST['password'])."',
-			params='".mysql_real_escape_string($_POST['params'])."' WHERE vmID='".$id."'");
+			params='".mysql_real_escape_string($_POST['params'])."',
+			persistent='".isset($_POST['persistent'])."'
+				 WHERE vmID='".$id."'");
 			$tmp->assign('message',"<div class='notice success'>Die Daten wurden gespeichert.</div>");
 		}
 	}
@@ -38,9 +41,9 @@ if(isset($_SESSION['user'])){
 	}
 
 	if($action == "start"){
-		if(Helper::hasRessources()){
+		$vm = new QemuVm($_GET['vmID']);
+		if(Helper::hasRessources($vm->ram)){
 			if(Helper::isOwner($_GET['vmID'])){
-				$vm = new QemuVm($_GET['vmID']);
 				if($vm->status == QemuMonitor::RUNNING){
 					$tmp->assign('message',"<div class='notice'>Die VM scheint bereits aus zu laufen.</div>");
 				}
@@ -101,8 +104,7 @@ if(isset($_SESSION['user'])){
 			while($ds = mysql_fetch_assoc($get)){
 				$image .= '<option value="'.$ds['imageID'].'">'.$ds['type'].' - '.$ds['name'].'</option>';
 			}
-
-				
+			
 			$tmp2 = new RainTPL();
 			$tmp2->assign('owner',$owner);
 			$tmp2->assign('image',$image);
@@ -133,6 +135,8 @@ if(isset($_SESSION['user'])){
 
 				$image = str_replace('value="'.$data['image'].'"','value="'.$data['image'].'" selected="selected"',$image);
 
+				if($data['persistent']) $persistent = "checked='checked'";
+				else $persistent = '';
 				
 				$tmp2 = new RainTPL();
 				$tmp2->assign('name',$data['name']);
@@ -142,6 +146,7 @@ if(isset($_SESSION['user'])){
 				$tmp2->assign('password',$data['password']);
 				$tmp2->assign('params',$data['params']);
 				$tmp2->assign('vmID',$data['vmID']);
+				$tmp2->assign('persistent',$persistent);
 				$tmp->assign('content',$tmp2->draw('vms_edit',true));
 				
 			}

@@ -23,11 +23,21 @@ class Helper {
 		return false;
 	}
 
-	static function hasRessources() {
-		/*
-		 * @todo
-		*/
-		return true;
+	static function hasRessources($ram_needed) {
+		$get = mysql_query("SELeCT count(vmId) AS `running` FROM vm WHERE status = '".QemuMonitor::RUNNING."'");
+		$data = mysql_fetch_assoc($get);
+		
+		$run = true;
+		
+		if($data['running'] > $GLOBALS['config']['max_running_vms']){
+			$run = false;
+		}
+		
+		$ram = self::getQemuRamTemp();
+		if($ram != false && $ram + $ram_needed  > $GLOBALS['config']['max_ram']*1024*1024*1024){
+			$run = false;
+		}
+		return $run;
 	}
 	
 	static function getUserName($roleID){
@@ -86,6 +96,15 @@ class Helper {
 			}
 		}
 		return $pass;
+	}
+	
+	static function getQemuRamTemp(){
+		if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+			return false;
+		}
+		else{
+			return FileSystem::getDirectorySize('/dev/shm');
+		}
 	}
 	
 }

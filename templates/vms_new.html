@@ -6,7 +6,7 @@
 			</tr>
 		</thead>
 		<tr>
-			<th width="30%">Name:</th>
+			<th>Name:</th>
 			<td><input type="text" value="" name="name" />
 			</td>
 		</tr>
@@ -29,16 +29,21 @@
 		<tr>
 			<th>Ram:</th>
 			<td>
-				<input type="text" class="no-margin inline" value="{$ram}" name="ram" size="6" /> Mb</td>
+				<input type="text"value="{$ram}" name="ram" size="6" /> Mb</td>
 		</tr>
 		<tr>
 			<th>VNC Password:</th>
-			<td><input type="text" class="no-margin inline" value="" name="password" />
+			<td><input type="text" value="" name="password" />
 			</td>
 		</tr>
 		<tr>
-			<th>Optionale Parameter:</th>
-			<td><input type="text" class="no-margin inline" value="" name="params" />
+			<th>Optionale Qemu Parameter:</th>
+			<td><input type="text" value="" name="params" />
+			</td>
+		</tr>
+		<tr>
+			<th>Persistent</th>
+			<td><input type="checkbox" value="" name="persistent" /> Die VM bleibt auch ohne Ping online
 			</td>
 		</tr>
 	</table>

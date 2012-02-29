@@ -5,9 +5,9 @@ class QemuVm {
 	public $status;
 	protected $host;
 	protected $monitor_port;
-	private $ram;
-	private $image;
-	private $vmID;
+	public $ram;
+	public $image;
+	public $vmID;
 	public $vnc_port;
 	public function __construct($id){
 		$this->monitor = null;
@@ -75,7 +75,6 @@ class QemuVm {
 			foreach($lines as $line){
 				if(strstr($line, ":")){
 					list(,$status) = explode(": ",$line);
-					//$this->status = trim($status);
 					$this->setStatus(trim($status));
 					break;
 				}

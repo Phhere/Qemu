@@ -10,9 +10,9 @@ if(isset($_SESSION['user'])){
 	}
 	
 	if($action == "start"){
-		if(Helper::hasRessources()){
-			if(Helper::isOwner($_GET['vmID'])){
-				$vm = new QemuVm($_GET['vmID']);
+		$vm = new QemuVm($_GET['vmID']);
+		if(Helper::hasRessources($vm->ram)){
+			if(Helper::isOwner($vm->vmID)){
 				if($vm->status == QemuMonitor::RUNNING){
 					$tmp->assign('message',"<div class='notice'>Die VM scheint bereits aus zu laufen.</div>");
 				}

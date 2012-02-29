@@ -6,7 +6,7 @@
 			</tr>
 		</thead>
 		<tr>
-			<th width="30%">Name:</th>
+			<th>Name:</th>
 			<td><input type="text" value="{$name}" name="name" />
 			</td>
 		</tr>
@@ -39,9 +39,14 @@
 			</td>
 		</tr>
 		<tr>
-			<th>Optionale Parameter:</th>
+			<th>Optionale Qemu Parameter:</th>
 			<td>
 				<input type="text" class="no-margin inline" value="{$params}" name="params" />
+			</td>
+		</tr>
+		<tr>
+			<th>Persistent</th>
+			<td><input type="checkbox" value="" name="persistent" {$persistent} /> Die VM bleibt auch ohne Ping online
 			</td>
 		</tr>
 	</table>

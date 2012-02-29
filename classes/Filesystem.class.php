@@ -87,9 +87,6 @@
 						}
 				}
 			}
-			else{
-				$size = -1;
-			}
 			if($format == true){
 				return self::formatFileSize($size);
 			}

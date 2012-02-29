@@ -38,8 +38,8 @@ if(isset($_SESSION['user'])){
 		$tmp->assign('free',FileSystem::formatFileSize($all-$free));
 		$tmp->assign('all',FileSystem::formatFileSize($all));
 		
-		$qemu_ram = FileSystem::getDirectorySize('/dev/shm');
-		if($qemu_ram != -1){
+		$qemu_ram = Helper::getQemuRamTemp();
+		if($qemu_ram != false){
 			$tmp->assign('ram_qemu',FileSystem::formatFileSize($qemu_ram));
 		}
 		else{
