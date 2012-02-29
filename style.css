@@ -41,8 +41,7 @@ body {
 	padding: 0;
 	color: #000;
 	background: #efefef url(css/img/grid.png) repeat center top;
-	font: normal 0.9em/150% 'Arimo', "Trebuchet MS", arial, verdana,
-		sans-serif;
+	font: normal 0.9em/150% 'Arimo', "Trebuchet MS", arial, verdana,sans-serif;
 	text-shadow: 0px 0px 1px transparent; /* google font pixelation fix */
 }
 
@@ -88,13 +87,9 @@ body {
 	-webkit-border-radius: 3px;
 	border-radius: 3px;
 }
-
-.no-margin {
-	margin-bottom: 2px !important;
+table.striped :not(thead) tr th {
+	width: 30%;
 }
-input[size]{
-	width: auto;
-}
-input.inline {
-	display:inline !important;
+table input {
+	margin-top: 0px !important;
 }

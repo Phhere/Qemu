@@ -73,12 +73,12 @@ if(isset($_SESSION['user'])){
 				$lastrun = '---';
 			}
 			if($ds['status'] == QemuMonitor::RUNNING){
-				$buttons  = '<a href="index.php?site=myvm&action=stop&vmID='.$ds['vmID'].'" class="button red small center  no-margin"><span class="icon" data-icon="Q"></span>Stop</a>';
-				$buttons .= '<a href="vnc.php?vmID='.$ds['vmID'].'"class="button small center grey  no-margin"><span class="icon" data-icon="0"></span>VNC</a>';
+				$buttons  = '<a href="index.php?site=myvm&action=stop&vmID='.$ds['vmID'].'" class="button red small center"><span class="icon" data-icon="Q"></span>Stop</a>';
+				$buttons .= '<a href="vnc.php?vmID='.$ds['vmID'].'"class="button small center grey"><span class="icon" data-icon="0"></span>VNC</a>';
 			}
 			else{
-				$buttons  = '<a href="index.php?site=myvm&action=start&vmID='.$ds['vmID'].'" class="button green small center no-margin"><span class="icon" data-icon="&nbsp;"></span>Start</a>';
-				$buttons .= '<a class="button small center grey no-margin"><span class="icon" data-icon="G"></span>Edit</a>';
+				$buttons  = '<a href="index.php?site=myvm&action=start&vmID='.$ds['vmID'].'" class="button green small center"><span class="icon" data-icon="&nbsp;"></span>Start</a>';
+				$buttons .= '<a class="button small center grey"><span class="icon" data-icon="G"></span>Edit</a>';
 			}
 			$vm = array();
 			$vm['lastrun'] = $lastrun;

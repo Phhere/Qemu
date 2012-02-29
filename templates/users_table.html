@@ -3,14 +3,12 @@
 <table class="striped">
 			<thead><tr>
 				<th width="100"> </th>
-				<th width="100">Role</th>
 				<th>VMs</th>
 				<th width="250">Options</th>
 			</tr></thead>
 	{if condition="is_array($users)"} {loop="users"}
 	<tr>
-		<th>{$value.mail}</th>
-		<td>{$value.role}</td>
+		<th>{$value.mail}<br/><small>{$value.role}</small></th>
 		<td>{$value.vms}</td>
 		<td>{$value.buttons}</td>
 	</tr>

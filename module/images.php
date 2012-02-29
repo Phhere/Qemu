@@ -163,12 +163,12 @@ if(isset($_SESSION['user'])){
 				while($ds = mysql_fetch_assoc($get)){
 					$buttons = '';
 					if($_SESSION['user']->role['image_edit'] == 1){
-						$buttons .= '<a href="index.php?site=images&action=edit&image='.$ds['imageID'].'" class="button small center grey no-margin"><span class="icon" data-icon="G"></span>Edit</a>';
+						$buttons .= '<a href="index.php?site=images&action=edit&image='.$ds['imageID'].'" class="button small center grey"><span class="icon" data-icon="G"></span>Edit</a>';
 					}
-					$buttons .= '<a href="index.php?site=images&action=delete&image='.$ds['imageID'].'" class="button small center grey no-margin"><span class="icon" data-icon="T"></span>delete</a>';
+					$buttons .= '<a href="index.php?site=images&action=delete&image='.$ds['imageID'].'" class="button small center grey"><span class="icon" data-icon="T"></span>delete</a>';
 				
 					if($ds['status'] == QemuMonitor::SHUTDOWN){
-						$buttons .= '<a href="index.php?site=images&action=status&image='.$ds['imageID'].'" class="button small center grey no-margin"><span class="icon" data-icon="v"></span> Status</a>';
+						$buttons .= '<a href="index.php?site=images&action=status&image='.$ds['imageID'].'" class="button small center grey"><span class="icon" data-icon="v"></span> Status</a>';
 					}
 					
 					$obj = array();

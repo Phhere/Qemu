@@ -1,4 +1,4 @@
-<h3>Systemverwaltung</h3>
+<h1>Systemverwaltung</h1>
 
 <div class="col_5">
 	<h4>VM Status</h4>
@@ -10,11 +10,12 @@
 	CPU: {$cpu_usage}<br />Ram {$ram_usage}<br /> HDD: {$free} / {$all}<br /> Qemu Ram: {$ram_qemu}
 </div>
 
-<h4>Einstellungen</h4>
+<h2>Einstellungen</h2>
 
 {if condition="isset($message)"} {$message} {/if}
 
 <form method='post'>
+	<h4>Pfade</h4>
 	<table class="striped">
 		<thead>
 			<tr>
@@ -23,45 +24,76 @@
 			</tr>
 		</thead>
 		<tr>
-			<th width="30%">Qemu Executable</th>
-			<td><input type="text" class="no-margin" name="qemu_executable" value="{$qemu_executable}" /></td>
+			<th>Qemu Executable</th>
+			<td><input type="text" class="col_12" name="qemu_executable" value="{$qemu_executable}" /></td>
 		</tr>
 		<tr>
 			<th>Qemu-Img Executable</th>
-			<td><input type="text" class="no-margin" name="qemu_img_executable" value="{$qemu_img_executable}" /></td>
+			<td><input type="text" class="col_12" name="qemu_img_executable" value="{$qemu_img_executable}" /></td>
 		</tr>
 		<tr>
 			<th>Qemu Bios Folder</th>
-			<td><input type="text" class="no-margin" name="qemu_bios_folder" value="{$qemu_bios_folder}" /></td>
+			<td><input type="text" class="col_12" name="qemu_bios_folder" value="{$qemu_bios_folder}" /></td>
 		</tr>
 		<tr>
 			<th>Qemu Image Folder</th>
-			<td><input type="text" class="no-margin" name="qemu_image_folder" value="{$qemu_image_folder}" /></td>
-		</tr>
-		<tr>
-			<th>Qemu Monitor Startport</th>
-			<td><input type="text" class="no-margin" size="6" name="monitorport_min" value="{$monitorport_min}" /></td>
-		</tr>
-		<tr>
-			<th>VNC Startport</th>
-			<td><input type="text" class="no-margin" size="6" name="vncport_min" value="{$vncport_min}" /></td>
+			<td><input type="text" class="col_12" name="qemu_image_folder" value="{$qemu_image_folder}" /></td>
 		</tr>
 		<tr>
 			<th>Log Path</th>
-			<td><input type="text" class="no-margin" name="log_path" value="{$log_path}" /></td>
+			<td><input type="text" name="log_path" class="col_12" value="{$log_path}" /></td>
 		</tr>
+	</table>
+	<h4>Ports</h4>
+	<table class="striped">
+		<thead>
+			<tr>
+				<th>Einstellung</th>
+				<th>Wert</th>
+			</tr>
+		</thead>
+		<tr>
+			<th>Qemu Monitor Startport</th>
+			<td><input type="text" size="6" class="col_2" name="monitorport_min" value="{$monitorport_min}" /></td>
+		</tr>
+		<tr>
+			<th>VNC Startport</th>
+			<td><input type="text" size="6" class="col_2" name="vncport_min" value="{$vncport_min}" /></td>
+		</tr>
+	</table>
+	<h4>Last-Limitierung</h4>
+	<table class="striped">
+		<thead>
+			<tr>
+				<th>Einstellung</th>
+				<th>Wert</th>
+			</tr>
+		</thead>
 		<tr>
 			<th>Max Ram Usage</th>
-			<td><input type="text" class="no-margin inline" name="max_ram" size="4" value="{$max_ram}" /> Gb</td>
+			<td><input type="text" class="col_2" name="max_ram" size="4" value="{$max_ram}" /> Gb</td>
 		</tr>
 		<tr>
+			<th>Max running VMs</th>
+			<td><input type="text" class="col_2" name="max_running_vms" size="4" value="{$max_running_vms}" /> Gb</td>
+		</tr>
+	</table>
+	<h4>Standardeinstellungen</h4>
+	<table class="striped">
+		<thead>
+			<tr>
+				<th>Einstellung</th>
+				<th>Wert</th>
+			</tr>
+		</thead>
+		<tr>
 			<th>Default Ram for VM</th>
-			<td><input type="text" class="no-margin inline" name="default_ram" size="4" value="{$default_ram}" /> Mb</td>
+			<td><input type="text" class="col_2" name="default_ram" size="4" value="{$default_ram}" /> Mb</td>
 		</tr>
 		<tr>
 			<th>Default Role</th>
 			<td>
-				<select name="default_role" class="no-margin inline">{$roles}</select>
+			<select name="default_role" class="no-margin inline">{$roles}</select>
 			</td>
 		</tr>
 	</table>

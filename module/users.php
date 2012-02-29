@@ -89,13 +89,13 @@ if(isset($_SESSION['user'])){
 				while($ds = mysql_fetch_assoc($get)){
 					$buttons = '';
 					if($_SESSION['user']->role['user_edit'] == 1){
-						$buttons .= '<a href="index.php?site=users&action=edit&user='.$ds['userID'].'" class="button grey small center no-margin"><span class="icon" data-icon="G"></span>Edit</a>';
+						$buttons .= '<a href="index.php?site=users&action=edit&user='.$ds['userID'].'" class="button grey small center"><span class="icon" data-icon="G"></span>Edit</a>';
 					}
 					if($_SESSION['user']->role['vm_create'] == 1){
-						$buttons .= '<a href="index.php?site=users&action=addVM&user='.$ds['userID'].'" class="button green small center no-margin"><span class="icon" data-icon="+"></span>add VM</a>';
+						$buttons .= '<a href="index.php?site=users&action=addVM&user='.$ds['userID'].'" class="button green small center"><span class="icon" data-icon="+"></span>add VM</a>';
 					}
 					if($_SESSION['user']->role['user_remove'] == 1){
-						$buttons .= '<a href="index.php?site=users&action=delete&user='.$ds['userID'].'" class="button red small center no-margin"><span class="icon" data-icon="x"></span>delete</a>';
+						$buttons .= '<a href="index.php?site=users&action=delete&user='.$ds['userID'].'" class="button red small center"><span class="icon" data-icon="x"></span>delete</a>';
 					}
 						
 					$vms = mysql_query("SELECT * FROM vm WHERE owner='".$ds['userID']."'");
