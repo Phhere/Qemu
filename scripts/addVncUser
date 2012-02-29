@@ -1,0 +1,4 @@
+# $1 matrikel
+# $2 password 
+sudo useradd -p $2 -G vnc_users -d /home/vns_users/vnc_$1 vnc_$1
+mkdir /home/vns_users/vnc_$1/.ssh

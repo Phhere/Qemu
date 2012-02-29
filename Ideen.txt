@@ -1,0 +1,7 @@
+SSH + Chroot
+SSH + Config 
+	command="/bin/false",no-agent-forwarding,no-pty,no-usr-rc,no-X11-forwarding,permitOpen="localhost:5901"..
+
+per PHP setzen vs Script
+
+SSH-Key upload
