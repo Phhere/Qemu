@@ -84,7 +84,6 @@ if(isset($_SESSION['user'])){
 			$vm['lastrun'] = $lastrun;
 			$vm['buttons'] = $buttons;
 			$vm['name'] = $ds['name'];
-			$vm['image'] = Image::getImagePath($ds['image']);
 			$vm['ram'] = FileSystem::formatFileSize($ds['ram']*1024*1024,0);
 			$vms[] = $vm;
 		}

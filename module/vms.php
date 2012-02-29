@@ -11,15 +11,26 @@ if(isset($_SESSION['user'])){
 
 	if(isset($_POST['save'])){
 		if($_SESSION['user']->role['vm_create'] == 1){
-			mysql_query("INSERT INTO vm (owner,name,image,ram,password,params,persistent) VALUES
+			$do = mysql_query("INSERT INTO vm (owner,name,ram,password,params,persistent) VALUES
 			('".mysql_real_escape_string($_POST['owner'])."',
 			 '".mysql_real_escape_string($_POST['name'])."',
-			 '".mysql_real_escape_string($_POST['image'])."',
 			 '".mysql_real_escape_string($_POST['ram'])."',
 			 '".mysql_real_escape_string($_POST['password'])."',
 			 '".mysql_real_escape_string($_POST['params'])."',
 			 '".isset($_POST['persistent'])."')");
-			$tmp->assign('message',"<div class='notice success'>Die Daten wurden gespeichert.</div>");
+			if($do){
+				$id = mysql_insert_id();
+				foreach($_POST['image'] as $image){
+					if($image != "0"){
+						mysql_query("INSERT INTO vm_images (vmID,imageID) VALUES ('".$id."','".$image."')");
+					}
+				}
+				
+				$tmp->assign('message',"<div class='notice success'>Die Daten wurden gespeichert.</div>");
+			}
+			else{
+				$tmp->assign('message',"<div class='notice error'>Fehler beim speichern der Daten.</div>");
+			}
 		}
 	}
 	elseif(isset($_POST['save_edit'])){
@@ -27,12 +38,19 @@ if(isset($_SESSION['user'])){
 		if($_SESSION['user']->role['vm_edit'] == 1){
 			mysql_query("UPDATE vm SET owner='".mysql_real_escape_string($_POST['owner'])."',
 			name='".mysql_real_escape_string($_POST['name'])."', 
-			image='".mysql_real_escape_string($_POST['image'])."',
 			ram='".mysql_real_escape_string($_POST['ram'])."',
 			password='".mysql_real_escape_string($_POST['password'])."',
 			params='".mysql_real_escape_string($_POST['params'])."',
 			persistent='".isset($_POST['persistent'])."'
 				 WHERE vmID='".$id."'");
+			
+			mysql_query("DELETE FROM vm_images WHERE vmID='".$id."'");
+			foreach($_POST['image'] as $image){
+				if($image != "0"){
+					mysql_query("INSERT INTO vm_images (vmID,imageID) VALUES ('".$id."','".$image."')");
+				}
+			}
+			
 			$tmp->assign('message',"<div class='notice success'>Die Daten wurden gespeichert.</div>");
 		}
 	}
@@ -127,13 +145,21 @@ if(isset($_SESSION['user'])){
 
 				$owner = str_replace('value="'.$data['owner'].'"','value="'.$data['owner'].'" selected="selected"',$owner);
 
-				$image = '';
+				$image_list = '<option value="0">--</option>';
 				$get = mysql_query("SELECT imageID,type,name FROM images");
 				while($ds = mysql_fetch_assoc($get)){
-					$image .= '<option value="'.$ds['imageID'].'">'.$ds['type'].' - '.$ds['name'].'</option>';
+					$image_list .= '<option value="'.$ds['imageID'].'">'.$ds['type'].' - '.$ds['name'].'</option>';
 				}
 
-				$image = str_replace('value="'.$data['image'].'"','value="'.$data['image'].'" selected="selected"',$image);
+				$images = array();
+				$i=1;
+				$get = mysql_query("SELECT * FROM vm_images WHERE vmID='".$id."'");
+				while($ds = mysql_fetch_assoc($get)){
+					$image = str_replace('value="'.$ds['imageID'].'"','value="'.$ds['imageID'].'" selected="selected"',$image_list);
+					$images[] = array('image'=>$image,'counter'=>$i);
+					$i++;
+				}
+				
 
 				if($data['persistent']) $persistent = "checked='checked'";
 				else $persistent = '';
@@ -141,12 +167,12 @@ if(isset($_SESSION['user'])){
 				$tmp2 = new RainTPL();
 				$tmp2->assign('name',$data['name']);
 				$tmp2->assign('owner',$owner);
-				$tmp2->assign('image',$image);
 				$tmp2->assign('ram',$data['ram']);
 				$tmp2->assign('password',$data['password']);
 				$tmp2->assign('params',$data['params']);
 				$tmp2->assign('vmID',$data['vmID']);
 				$tmp2->assign('persistent',$persistent);
+				$tmp2->assign('images',$images);
 				$tmp->assign('content',$tmp2->draw('vms_edit',true));
 				
 			}
@@ -169,7 +195,7 @@ if(isset($_SESSION['user'])){
 		if(mysql_num_rows($get)){
 			$vms = array();
 			while($ds = mysql_fetch_assoc($get)){
-				if($ds['lastrun'] != '0000-00-00'){
+				if($ds['lastrun'] != '0000-00-00 00:00:00'){
 					$lastrun = date("d.m.Y H:i", strtotime($ds['lastrun']));
 				}
 				else{
@@ -187,7 +213,6 @@ if(isset($_SESSION['user'])){
 				$vm = array();
 				$vm['name'] = $ds['name'];
 				$vm['owner'] = Helper::getUserName($ds['owner']);
-				$vm['image'] = Image::getImagePath($ds['image']);
 				$vm['ram'] = FileSystem::formatFileSize($ds['ram']*1024*1024,0);
 				$vm['lastrun'] = $lastrun;
 				$vm['buttons'] = $buttons;

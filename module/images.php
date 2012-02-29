@@ -157,7 +157,8 @@ if(isset($_SESSION['user'])){
 			
 			$tmp2 = new RainTPL();
 			
-			$get = mysql_query("SELECT i.*, v.status FROM images i LEFT JOIN vm v ON v.image = i.imageID");
+			$get = mysql_query("SELECT i.*,v.status FROM images i LEFT JOIN vm_images t ON t.imageID = i.imageID LEFT JOIN vm v ON v.vmID = t.vmID");
+			echo mysql_error();
 			$vms = array();
 			if(mysql_num_rows($get)){
 				while($ds = mysql_fetch_assoc($get)){

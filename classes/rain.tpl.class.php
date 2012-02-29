@@ -201,7 +201,8 @@ class RainTPL{
             unset( $this->tpl );
 
             // return or print the template
-            if( $return_string ) return $raintpl_contents; else echo $raintpl_contents;
+            if( $return_string ) return $raintpl_contents; 
+            else echo $raintpl_contents;
 
         }
 

@@ -12,7 +12,7 @@ class Image {
 	}
 	static function getStatus($imageID){
 		$path = self::getImagePath($imageID);
-		$cmd = "H:\Web\htdocs\Qemu\bin\qemu-img.exe info ".$path;
+		$cmd = $GLOBALS['config']['qemu_img_executable']." info ".$path;
 		exec($cmd,$output);
 		$return = array();
 		foreach($output as $line){

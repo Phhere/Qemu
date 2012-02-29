@@ -19,14 +19,6 @@
 			</td>
 		</tr>
 		<tr>
-			<th>Image:</th>
-			<td>
-				<select name="image">
-					{$image}
-				</select>
-			</td>
-		</tr>
-		<tr>
 			<th>Ram:</th>
 			<td>
 				<input type="text" class="no-margin inline" value="{$ram}" name="ram" size="6" /> Mb
@@ -49,6 +41,20 @@
 			<td><input type="checkbox" value="" name="persistent" {$persistent} /> Die VM bleibt auch ohne Ping online
 			</td>
 		</tr>
+	</table>
+	<table class="striped">
+		<thead>
+			<tr>
+				<th>Images</th>
+				<th><a onclick="javascript:addRow($(this).parents('table'))">add Row</a></th>
+			</tr>
+		</thead>
+		{loop="images"}
+		<tr>
+			<th>Image <span>{$value.counter}</span>: </th>
+			<td><select name="image[]">{$value.image}</select></td>
+		</tr>
+		{/loop}
 	</table>
 	<input type="hidden" name="vm" value="{$vmID}"/>
 	<input type="submit" class="no-margin center" name="save_edit" value="Speichern" />

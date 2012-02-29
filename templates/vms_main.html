@@ -3,11 +3,10 @@
 <table class="striped">
 	<thead>
 		<tr>
-			<th width="80"></th>
-			<th>Image</th>
-			<th>Ram</th>
-			<th width="120">Last Run</th>
-			<th width="140">Options</th>
+			<th></th>
+			<th width="10%">Ram</th>
+			<th width="20%">Last Run</th>
+			<th width="40%">Options</th>
 		</tr>
 	</thead>
 	{if condition="is_array($vms)"} {loop="vms"}
@@ -15,7 +14,6 @@
 		<th>{$value.name}<br />
 		<small>{$value.owner}</small>
 		</th>
-		<td>{$value.image}</td>
 		<td>{$value.ram}</td>
 		<td>{$value.lastrun}</td>
 		<td>{$value.buttons}</td>

@@ -21,6 +21,7 @@ include './boxes/login.php';
 include './boxes/status.php';
 include './boxes/navigation.php';
 
+$GLOBALS['template']->assign('ping','');
 if(isset($_SESSION['user'])){
 	$get = mysql_query("SELECT count(*) AS `running` FROM vm WHERE owner = '".$_SESSION['user']->id."' AND status='".QemuMonitor::RUNNING."' AND persistent='0'");
 	$data = mysql_fetch_assoc($get);

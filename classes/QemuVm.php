@@ -6,7 +6,7 @@ class QemuVm {
 	protected $host;
 	protected $monitor_port;
 	public $ram;
-	public $image;
+	public $images;
 	public $vmID;
 	public $vnc_port;
 	public function __construct($id){
@@ -14,17 +14,21 @@ class QemuVm {
 		$this->devices = array();
 		$this->host = "localhost";
 		$this->vmID = $id;
-		$get = mysql_query("SELECT * FROM vm WHERE vmID='".$id."'");
+		$this->images = array();
+		$get = mysql_query("SELECT * FROM vm WHERE vmID='".$this->vmID."'");
 		if(mysql_num_rows($get)){
 			$data = mysql_fetch_assoc($get);
 			$this->ram = $data['ram'];
-			$this->image = Image::getImagePath($data['image']);
-			$this->imageType = Image::getImageType($data['image']);
 			$this->monitor_port = $GLOBALS['config']['monitorport_min'] + (int)$data['vmID'];
 			$this->vnc_port = $GLOBALS['config']['vncport_min'] + (int)$data['vmID'];
 			$this->status = $data['status'];
 			$this->name = $data['name'];
 			$this->password = $data['password'];
+			
+			$get = mysql_query("SELECT *,i.path,i.type FROM vm_images v JOIN images i ON i.imageID=v.imageID WHERE v.imageID = ".$this->vmID);
+			while($ds = mysql_fetch_assoc($get)){
+				$this->images[] = array('path'=>$ds['path'],'type'=>$ds['type']);
+			}
 		}
 		else{
 			throw new Exception("Unkown VM ID");
@@ -35,8 +39,11 @@ class QemuVm {
 		$cmd = $GLOBALS['config']['qemu_executable'];
 		$cmd .=" -L ".$GLOBALS['config']['qemu_bios_folder'];
 		$cmd .=" -m ".$this->ram;
-		$cmd .=" -".$this->imageType." ".$this->image;
-		#$cmd .=" -soundhw all";
+		
+		foreach($this->images as $image){
+			$cmd .=" -".$image['type']." ".$image['path'];
+		}
+		
 		$cmd .=" -localtime";
 		$cmd .=" -monitor telnet:localhost:".$this->monitor_port.",server,nowait";
 		if($this->password != ""){
@@ -44,7 +51,7 @@ class QemuVm {
 		}
 			
 		$this->executeStart($cmd);
-		mysql_query("UPDATE vm SET lastrun=NOW() WHERE vmID='".$this->vmID."'");
+		mysql_query("UPDATE vm SET lastrun=NOW(),last_ping=NOW() WHERE vmID='".$this->vmID."'");
 	}
 
 	public function setStatus($status){
