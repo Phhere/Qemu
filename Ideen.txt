@@ -1,7 +1,12 @@
-SSH + Chroot
-SSH + Config 
+VNC Verbindung
+- SSH + Chroot
+- SSH + Config 
 	command="/bin/false",no-agent-forwarding,no-pty,no-usr-rc,no-X11-forwarding,permitOpen="localhost:5901"..
+- per PHP setzen vs Script
+- SSH-Key upload
 
-per PHP setzen vs Script
-
-SSH-Key upload
+Benutzer
+- Matrikelnummer Abfragbar / verifizieren ?
+- vorhandene SSH Accounts übernehmen ?
+- Selber Boot CD auswählen?
+- Laufwerk vom Server mounten ? 

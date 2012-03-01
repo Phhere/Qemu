@@ -74,7 +74,12 @@ if(isset($_SESSION['user'])){
 			}
 			if($ds['status'] == QemuMonitor::RUNNING){
 				$buttons  = '<a href="index.php?site=myvm&action=stop&vmID='.$ds['vmID'].'" class="button red small center"><span class="icon" data-icon="Q"></span>Stop</a>';
-				$buttons .= '<a href="vnc.php?vmID='.$ds['vmID'].'"class="button small center grey"><span class="icon" data-icon="0"></span>VNC</a>';
+				if($ds['password']){
+					$buttons .= '<a href="vnc.php?vmID='.$ds['vmID'].'" class="button small center grey"><span class="icon" data-icon="0"></span>VNC</a>';
+				}
+				else{
+					$buttons .= '<a href="#" disabled="disabled" class="button small center grey"><span class="icon" data-icon="0"></span>VNC</a>';
+				}
 			}
 			else{
 				$buttons  = '<a href="index.php?site=myvm&action=start&vmID='.$ds['vmID'].'" class="button green small center"><span class="icon" data-icon="&nbsp;"></span>Start</a>';

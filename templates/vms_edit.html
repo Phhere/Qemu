@@ -7,7 +7,7 @@
 		</thead>
 		<tr>
 			<th>Name:</th>
-			<td><input type="text" value="{$name}" name="name" />
+			<td><input type="text" value="{$name}" class="col_12" name="name" />
 			</td>
 		</tr>
 		<tr>
@@ -21,19 +21,19 @@
 		<tr>
 			<th>Ram:</th>
 			<td>
-				<input type="text" class="no-margin inline" value="{$ram}" name="ram" size="6" /> Mb
+				<input type="text" class="col_4" value="{$ram}" name="ram" size="6" /> Mb
 			</td>
 		</tr>
 		<tr>
 			<th>VNC Password:</th>
 			<td>
-				<input type="text" class="no-margin inline" value="{$password}" name="password" />
+				<input type="text" class="col_12" value="{$password}" name="password" />
 			</td>
 		</tr>
 		<tr>
 			<th>Optionale Qemu Parameter:</th>
 			<td>
-				<input type="text" class="no-margin inline" value="{$params}" name="params" />
+				<input type="text" class="col_12" value="{$params}" name="params" />
 			</td>
 		</tr>
 		<tr>
@@ -57,5 +57,5 @@
 		{/loop}
 	</table>
 	<input type="hidden" name="vm" value="{$vmID}"/>
-	<input type="submit" class="no-margin center" name="save_edit" value="Speichern" />
+	<input type="submit" class="center" name="save_edit" value="Speichern" />
 </form>

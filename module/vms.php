@@ -216,6 +216,14 @@ if(isset($_SESSION['user'])){
 				$vm['ram'] = FileSystem::formatFileSize($ds['ram']*1024*1024,0);
 				$vm['lastrun'] = $lastrun;
 				$vm['buttons'] = $buttons;
+				
+				$images = array();
+				$ge2 = mysql_query("SELECT *,i.path,i.type FROM vm_images v JOIN images i ON i.imageID=v.imageID WHERE v.imageID = ".$this->vmID);
+				while($dq = mysql_fetch_assoc($get2)){
+					$images[] = $dq['name'];
+				}
+				$vm['images'] = implode(", ",$images);
+				
 				$vms[] = $vm;
 			}
 			$tmp2->assign('vms',$vms);
