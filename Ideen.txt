@@ -6,7 +6,10 @@ VNC Verbindung
 - SSH-Key upload
 
 Benutzer
-- Matrikelnummer Abfragbar / verifizieren ?
+- Login per Kürzel
+- Manuell Anmeldung in der FS
 - vorhandene SSH Accounts übernehmen ?
-- Selber Boot CD auswählen?
 - Laufwerk vom Server mounten ? 
+- Nutzer legen selber VM an
+-- Bis HDD Limit
+-Pro User 2 VMs running

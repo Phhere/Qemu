@@ -33,10 +33,11 @@ class Helper {
 			$run = false;
 		}
 		
-		$ram = self::getQemuRamTemp();
+		/*$ram = self::getQemuRamTemp();
 		if($ram != false && $ram + $ram_needed  > $GLOBALS['config']['max_ram']*1024*1024*1024){
 			$run = false;
-		}
+		}*/
+		
 		return $run;
 	}
 	
