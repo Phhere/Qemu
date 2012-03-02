@@ -5,6 +5,21 @@ $(document).ready(function(){
 	if(window.ping){
 		pingServer();
 	}	
+	$('.vm_disabled').bind('click',function(){
+		var elem = $(this);
+		if(elem.attr('disabled')){
+			var pass = prompt("Geben sie ein VNC Passwort ein.");
+			if(pass != ""){
+				var vmID = elem.attr("href").substring(1);
+				$.get('ajax/setvnc.php?vmID='+vmID+'&pass='+pass,function(data) {
+					console.log(data,elem);
+					if(data == "OK"){
+						elem.attr("disabled","");
+					}
+				});
+			}
+		}
+	});
 });
 
 function addRow(table){
@@ -17,4 +32,10 @@ function addRow(table){
 	var span = org_row.find('span')[0];
 	$(span).html(rows.length+1);
 	table.find("tr:last").after(org_row);
+}
+
+function refreshUSB(){
+	$.get('ajax/refresh_usb.php',function(data) {
+		$('#usb_device').html(data);
+	});
 }

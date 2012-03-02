@@ -16,8 +16,8 @@ class QemuMonitor{
 			throw new Exception("Can't connect to VM");
 		}
 		stream_set_blocking($this->socket,0);
-		$this->execute("");
-		$this->getResponse();
+		/*$this->execute("");
+		$this->getResponse();*/
 	}
 	/**
 	 * Sends an command to VM without waiting for response

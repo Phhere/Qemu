@@ -2,7 +2,7 @@
 	<table class="striped">
 		<thead>
 			<tr>
-				<th colspan="2">new Image</th>
+				<th colspan="2">edit Image</th>
 			</tr>
 		</thead>
 		<tr>
@@ -22,6 +22,10 @@
 			<td>
 				<input type="text" class="col_12" name="path" value="{$path}" />
 			</td>
+		</tr>
+		<tr>
+			<th>nicht löschbar:</th>
+			<td><input type="checkbox" name="deleteable" {$delete}/>Wird genutzt für Laufwerke, die vom Server durchgereicht werden, z.b. CD-Rom oder USB-Sticks</td>
 		</tr>
 	</table>
 	<input type="hidden" name="image" value="{$imageID}"/>

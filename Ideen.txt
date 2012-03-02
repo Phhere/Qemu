@@ -1,15 +1,4 @@
-VNC Verbindung
-- SSH + Chroot
-- SSH + Config 
-	command="/bin/false",no-agent-forwarding,no-pty,no-usr-rc,no-X11-forwarding,permitOpen="localhost:5901"..
-- per PHP setzen vs Script
-- SSH-Key upload
-
 Benutzer
-- Login per Kürzel
 - Manuell Anmeldung in der FS
-- vorhandene SSH Accounts übernehmen ?
-- Laufwerk vom Server mounten ? 
 - Nutzer legen selber VM an
 -- Bis HDD Limit
--Pro User 2 VMs running

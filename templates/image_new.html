@@ -14,11 +14,20 @@
 			<td><select name="type">{$types}
 			</select></td>
 		</tr>
+		<tr>
+			<th>nicht löschbar:</th>
+			<td><input type="checkbox" name="deleteable" {$delete}/>Wird genutzt für Laufwerke, die vom Server durchgereicht werden, z.b. CD-Rom oder USB-Sticks</td>
+		</tr>
 	</table>
 	<ul class="tabs left">
-		<li><a href="#tab1">Existing file</a>
+		<li>
+			<a href="#tab1">Existing file</a>
 		</li>
-		<li><a href="#tab2">Create via Qemu-Img</a>
+		<li>
+			<a href="#tab2">Create via Qemu-Img</a>
+		</li>
+		<li>
+			<a href="#tab3">USB</a>
 		</li>
 	</ul>
 	<div id="tab1" class="tab-content">
@@ -33,7 +42,7 @@
 		<table class="striped">
 			<tr>
 				<th>Path:</th>
-				<td><input type="text" class="col_12" name="path" value="{$path}" />
+				<td><input type="text" class="col_12" name="path_create" value="{$path_create}" />
 				</td>
 			</tr>
 			<tr>
@@ -50,5 +59,15 @@
 			</tr>
 		</table>
 	</div>
+	<div id="tab3" class="tab-content">
+		<table class="striped">
+			<tr>
+				<th>Device:<br/>
+				<a onclick="javascript:refreshUSB();">Refresh</a></th>
+				<td><select name="usb_device" id="usb_device">{$usb_device}</select></td>
+			</tr>
+		</table>
+	</div>
+	<input type="hidden" name="tab" value="tab1"/>
 	<input type="submit" class="center" name="save_new" value="Speichern" />
 </form>

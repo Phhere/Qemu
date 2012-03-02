@@ -35,11 +35,11 @@ if(isset($_SESSION['user'])){
 		$free = disk_free_space ('/');
 		$all = disk_total_space('/');
 		
-		$tmp->assign('free',FileSystem::formatFileSize($all-$free));
+		$tmp->assign('free',FileSystem::formatFileSize($free));
 		$tmp->assign('all',FileSystem::formatFileSize($all));
 		
 		$qemu_ram = Helper::getQemuRamTemp();
-		if($qemu_ram != false){
+		if($qemu_ram !== false){
 			$tmp->assign('ram_qemu',FileSystem::formatFileSize($qemu_ram));
 		}
 		else{

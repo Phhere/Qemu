@@ -1,8 +1,14 @@
 <?php
 class Helper {
 
+	const RAM_LIMIT = 0;
+	const USER_LIMIT = -1;
+	const RUN = 1;
+	
+	static $cacheDir = '/cache';
+	
 	static function loadClasses(){
-		foreach(glob("classes/*.php") as $file){
+		foreach(glob($GLOBALS['rootDir']."/classes/*.php") as $file){
 			require_once $file;
 		}
 	}
@@ -30,7 +36,15 @@ class Helper {
 		$run = true;
 		
 		if($data['running'] > $GLOBALS['config']['max_running_vms']){
-			$run = false;
+			$run = self::RAM_LIMIT;
+		}
+		
+		if($_SESSION['user']->role['vm_create'] == 0){
+			$get = mysql_query("SELECT count(vmId) AS `running` FROM vm WHERE status = '".QemuMonitor::RUNNING."' AND owner='".$_SESSION['user']->id."'");
+			$data = mysql_fetch_assoc($get);
+			if($data['running'] > $GLOBALS['config']['running_vms']){
+				$run = self::USER_LIMIT;
+			}
 		}
 		
 		/*$ram = self::getQemuRamTemp();
@@ -105,6 +119,28 @@ class Helper {
 		}
 		else{
 			return FileSystem::getDirectorySize('/dev/shm');
+		}
+	}
+	
+	static function getUSBDevices($forceReload = false){
+		$cache = $GLOBALS['rootDir'].self::$cacheDir."/usbdevices";
+		if(file_exists($cache) && filemtime($cache) > time()-60*5 && $forceReload == false){
+			return unserialize(file_get_contents($cache));
+		}
+		else{
+			$ret = array();
+			exec("lsusb",$output);
+			foreach($output as $line){
+				preg_match("/ID (.*?):([0-9]*) (.*?)/si", $line,$matches);
+				$venID = $matches[0];
+				$devID = $matches[1];
+				$name  = $matches[2];
+				if(!stristr($name,"hub")){
+					$ret[] = array($venID,$devID,$name);
+				}
+			}
+			file_put_contents($cache, serialize($ret));
+			return $ret;
 		}
 	}
 	

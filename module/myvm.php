@@ -78,7 +78,7 @@ if(isset($_SESSION['user'])){
 					$buttons .= '<a href="vnc.php?vmID='.$ds['vmID'].'" class="button small center grey"><span class="icon" data-icon="0"></span>VNC</a>';
 				}
 				else{
-					$buttons .= '<a href="#" disabled="disabled" class="button small center grey"><span class="icon" data-icon="0"></span>VNC</a>';
+					$buttons .= '<a href="#'.$ds['vmID'].'" disabled="disabled" class="button small center grey vm_disabled"><span class="icon" data-icon="0"></span>VNC</a>';
 				}
 			}
 			else{

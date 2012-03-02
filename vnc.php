@@ -1,5 +1,4 @@
 <?php 
-session_start();
 include 'config.php';
 
 include 'classes/Helper.class.php';
@@ -16,7 +15,7 @@ if(isset($_SESSION['user'])){
 			header("Content-Type: application/zip");
 			header("Content-Transfer-Encoding: binary");
 			echo '[connection]
-host=192.168.178.21
+host='.$_SERVER['SERVER_NAME'].'
 port='.$vm->vnc_port.'
 [options]
 viewonly=0

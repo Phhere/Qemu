@@ -176,6 +176,7 @@ $(document).ready(function(){
 		tabs.removeClass('current');
 		$(this).parent().addClass('current');
 		$(tab_next).show();
+		$(this).parents('form').find('input[name=tab]').val(tab_next.substring(1));
 		return false;
 	});
 	

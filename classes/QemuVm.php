@@ -37,7 +37,9 @@ class QemuVm {
 
 	public function startVM(){
 		$cmd = $GLOBALS['config']['qemu_executable'];
-		$cmd .=" -L ".$GLOBALS['config']['qemu_bios_folder'];
+		if(!empty($GLOBALS['config']['qemu_bios_folder'])){
+			$cmd .=" -L ".$GLOBALS['config']['qemu_bios_folder'];
+		}
 		$cmd .=" -m ".$this->ram;
 		
 		foreach($this->images as $image){
@@ -46,12 +48,14 @@ class QemuVm {
 		
 		$cmd .=" -localtime";
 		$cmd .=" -monitor telnet:localhost:".$this->monitor_port.",server,nowait";
-		if($this->password != ""){
-			$cmd .=" -vnc :".$this->vmID.",password";
-		}
+		$cmd .=" -vnc :".$this->vmID.",password";
 			
 		$this->executeStart($cmd);
 		mysql_query("UPDATE vm SET lastrun=NOW(),last_ping=NOW() WHERE vmID='".$this->vmID."'");
+		if($this->password != ""){
+			$this->connect();
+			$this->setVncPassword($this->password);
+		}
 	}
 
 	public function setStatus($status){
@@ -66,9 +70,6 @@ class QemuVm {
 	public function connect(){
 		$this->monitor = new QemuMonitor($this->host, $this->monitor_port);
 		$this->setStatus(QemuMonitor::RUNNING);
-		if($this->password != ""){
-			$this->setVncPassword($this->password);
-		}
 	}
 	/**
 	 * Get the current status from Qemu

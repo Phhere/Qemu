@@ -63,7 +63,7 @@ if(isset($_SESSION['user'])){
 		if(Helper::hasRessources($vm->ram)){
 			if(Helper::isOwner($_GET['vmID'])){
 				if($vm->status == QemuMonitor::RUNNING){
-					$tmp->assign('message',"<div class='notice'>Die VM scheint bereits aus zu laufen.</div>");
+					$tmp->assign('content',"<div class='notice'>Die VM scheint bereits aus zu laufen.</div>");
 				}
 				else{
 					$vm->startVM();
@@ -71,17 +71,17 @@ if(isset($_SESSION['user'])){
 						$vm->connect();
 					}
 					catch(Exception $e){
-						$tmp->assign('message',"<div class='notice warning'>Die VM scheint nicht zu starten.</div>");
+						$tmp->assign('content',"<div class='notice warning'>Die VM scheint nicht zu starten.</div>");
 						$vm->setStatus(QemuMonitor::SHUTDOWN);
 					}
 					if(!isset($e)){
-						$tmp->assign('message',"<div class='notice success'>Die VM wurde gestartet.</div>");
+						$tmp->assign('content',"<div class='notice success'>Die VM wurde gestartet.</div>");
 					}
 				}
 			}
 		}
 		else{
-			$tmp->assign('message',"<div class='notice error'>Es sind keine Ressourcen mehr verfügbar um die VM zu starten</div>");
+			$tmp->assign('content',"<div class='notice error'>Es sind keine Ressourcen mehr verfügbar um die VM zu starten</div>");
 		}
 	}
 	elseif($action == "stop"){
@@ -92,20 +92,20 @@ if(isset($_SESSION['user'])){
 					$vm->connect();
 				}
 				catch(Exception $e){
-					$tmp->assign('message',"<div class='notice warning'>Die VM scheint bereits aus zu sein.</div>");
+					$tmp->assign('content',"<div class='notice warning'>Die VM scheint bereits aus zu sein.</div>");
 					$vm->setStatus(QemuMonitor::SHUTDOWN);
 				}
 				if(!isset($e)){
 					$vm->shutdown();
-					$tmp->assign('message',"<div class='notice success'>Die VM wird ausgeschaltet.</div>");
+					$tmp->assign('content',"<div class='notice success'>Die VM wird ausgeschaltet.</div>");
 				}
 			}
 			else{
-				$tmp->assign('message',"<div class='notice warning'>Die VM scheint bereits aus zu sein.</div>");
+				$tmp->assign('content',"<div class='notice warning'>Die VM scheint bereits aus zu sein.</div>");
 			}
 		}
 		else{
-			$tmp->assign('message',"<div class='notice error'>Sie besitzen nicht die Rechte die VM zu stoppen</div>");
+			$tmp->assign('content',"<div class='notice error'>Sie besitzen nicht die Rechte die VM zu stoppen</div>");
 		}
 	}
 	elseif($action == "new"){
@@ -218,7 +218,7 @@ if(isset($_SESSION['user'])){
 				$vm['buttons'] = $buttons;
 				
 				$images = array();
-				$ge2 = mysql_query("SELECT *,i.path,i.type FROM vm_images v JOIN images i ON i.imageID=v.imageID WHERE v.imageID = ".$this->vmID);
+				$get2 = mysql_query("SELECT *,i.path,i.type FROM vm_images v JOIN images i ON i.imageID=v.imageID WHERE v.imageID = ".$ds['vmID']);
 				while($dq = mysql_fetch_assoc($get2)){
 					$images[] = $dq['name'];
 				}
