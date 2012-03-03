@@ -39,3 +39,23 @@ function refreshUSB(){
 		$('#usb_device').html(data);
 	});
 }
+
+function updateFormBySelect(form){
+	form = $(form);
+	var name = form.attr('name');
+	var val = form.val();
+	$('.switchable').addClass('hide');
+	form.find("option").each(function(e){
+		var elem = $(this);
+		var elem_val = elem.val();
+		if(val == elem_val){
+			if($('#form_'+name+'_'+elem_val).length){
+				$('#form_'+name+'_'+elem_val).removeClass('hide');
+			}
+			else{
+				$('#form_'+name+'_default').removeClass('hide');
+			}
+			return false;
+		}
+	});
+}

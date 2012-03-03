@@ -4,6 +4,7 @@ include '../classes/Helper.class.php';
 Helper::loadClasses();
 
 if(isset($_SESSION['user'])){
+	$usb = '';
 	$usb_list = Helper::getUSBDevices(true);
 	if(count($usb_list)){
 		foreach(Helper::getUSBDevices() as $dev){

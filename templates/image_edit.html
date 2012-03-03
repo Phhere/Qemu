@@ -7,27 +7,27 @@
 		</thead>
 		<tr>
 			<th>Name:</th>
-			<td>
-				<input type="text" class="col_12" name="name" value="{$name}" />
-			</td>
+			<td><input type="text" class="col_12" name="name" value="{$name}" /></td>
 		</tr>
 		<tr>
 			<th>Type:</th>
-			<td>
-				<select name="type">{$types}</select>
-			</td>
+			<td><select name="type" onchange="javascript: updateFormBySelect(this);">{$types}
+			</select></td>
 		</tr>
-		<tr>
+		<tr class="{$class_usb} switchable" id="form_type_usb">
+			<th>Gerät:</th>
+			<td><select name="path_usb">{$usb}
+			</select></td>
+		</tr>
+		<tr class="{$class_path} switchable" id="form_type_default">
 			<th>Path:</th>
-			<td>
-				<input type="text" class="col_12" name="path" value="{$path}" />
-			</td>
+			<td><input type="text" class="col_12" name="path" value="{$path}" /></td>
 		</tr>
 		<tr>
 			<th>nicht löschbar:</th>
-			<td><input type="checkbox" name="deleteable" {$delete}/>Wird genutzt für Laufwerke, die vom Server durchgereicht werden, z.b. CD-Rom oder USB-Sticks</td>
+			<td><input type="checkbox" name="deleteable" {$delete}/> Wird genutzt für Laufwerke, die vom Server durchgereicht werden, z.b. CD-Rom oder
+				USB-Sticks</td>
 		</tr>
 	</table>
-	<input type="hidden" name="image" value="{$imageID}"/>
-	<input type="submit" class="center" name="save_edit" value="Speichern" />
+	<input type="hidden" name="image" value="{$imageID}" /> <input type="submit" class="center" name="save_edit" value="Speichern" />
 </form>

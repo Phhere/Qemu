@@ -53,7 +53,20 @@ if(isset($_SESSION['user'])){
 		}
 		elseif(isset($_POST['save_edit'])){
 			if($_SESSION['user']->role['image_edit'] == 1){
-				mysql_query("UPDATE images SET name = '".mysql_real_escape_string($_POST['name'])."',path = '".mysql_real_escape_string($_POST['path'])."',type = '".mysql_real_escape_string($_POST['type'])."', deleteable='".!isset($_POST['deleteable'])."' WHERE imageID='".$_POST['image']."'");
+				$do = false;
+				if($_POST['type'] == "usb"){
+					$path = $_POST['path_usb'];
+					if($path != "0"){
+						$do = true;
+					}
+				}
+				else{
+					$path = $_POST['path'];
+					$do = true;
+				}
+				if($do){
+					mysql_query("UPDATE images SET name = '".mysql_real_escape_string($_POST['name'])."',path = '".mysql_real_escape_string($path)."',type = '".mysql_real_escape_string($_POST['type'])."', deleteable='".!isset($_POST['deleteable'])."' WHERE imageID='".$_POST['image']."'");
+				}
 			}
 		}
 		elseif($action =='delete'){
@@ -155,12 +168,8 @@ if(isset($_SESSION['user'])){
 				$get = mysql_query("SELECT * FROM images WHERE imageID='".mysql_real_escape_string($image)."'");
 				if(mysql_num_rows($get)){
 					$data = mysql_fetch_assoc($get);
-					$types = '<option value="cdrom">CD-ROM</option>';
-					$types .= '<option value="hda">HDD A</option>';
-					$types .= '<option value="hdb">HDD B</option>';
-					$types .= '<option value="hdC">HDD C</option>';
-					$types .= '<option value="floppy">Floppy</option>';
-					$types = str_replace('value="'.$data['type'].'"', 'value="'.$data['type'].'" selected="selected"', $types);
+
+					$types = str_replace('value="'.$data['type'].'"', 'value="'.$data['type'].'" selected="selected"', $GLOBALS['device_types']);
 					
 					if(!$data['deleteable']){
 						$delete = ' checked="checked"';
@@ -169,10 +178,39 @@ if(isset($_SESSION['user'])){
 						$delete = '';
 					}
 					
+					$usb = '';
+					$usb_list = Helper::getUSBDevices();
+					if(count($usb_list)){
+						foreach(Helper::getUSBDevices() as $dev){
+							$usb .= '<option value="'.$dev[0].':'.$dev[1].'">'.$dev[2].'</option>';
+						}
+					}
+					else{
+						$usb = '<option value="0">kein USB Gerät vorhanden</option>';
+					}
+					
+					$usb = str_replace('value="'.$data['path'].'"', 'value="'.$data['path'].'" selected="selected"', $usb);
+					
+					if($data['type'] =="usb"){
+						
+						$style_usb = "";
+						$style_path = 'hide';
+						
+						$path = '';
+					}
+					else{
+						$path = $data['path'];
+						$style_usb = "hide";
+						$style_path = '';
+					}
+					
 					$tmp2 = new RainTPL();
 					$tmp2->assign('name',$data['name']);
 					$tmp2->assign('types',$types);
-					$tmp2->assign('path',$data['path']);
+					$tmp2->assign('path',$path);
+					$tmp2->assign('usb',$usb);
+					$tmp2->assign('class_usb',$style_usb);
+					$tmp2->assign('class_path',$style_path);
 					$tmp2->assign('imageID',$data['imageID']);
 					$tmp2->assign('delete',$delete);
 					$tmp->assign('content',$tmp2->draw('image_edit',true));

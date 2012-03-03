@@ -2,6 +2,8 @@
 include './config.php';
 include './classes/Helper.class.php';
 
+Helper::loadClasses();
+
 $get = mysql_query("SELECT * FROM vm WHERE status='".QemuMonitor::RUNNING."' AND persistent='0'");
 while($ds = mysql_fetch_assoc($get)){
 	$last_ping = strtotime($ds['last_ping']);

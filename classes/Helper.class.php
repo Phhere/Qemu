@@ -131,10 +131,10 @@ class Helper {
 			$ret = array();
 			exec("lsusb",$output);
 			foreach($output as $line){
-				preg_match("/ID (.*?):([0-9]*) (.*?)/si", $line,$matches);
-				$venID = $matches[0];
-				$devID = $matches[1];
-				$name  = $matches[2];
+				preg_match("/ID (.*?):([0-9]*) (.*?)$/si", $line,$matches);
+				$venID = $matches[1];
+				$devID = $matches[2];
+				$name  = $matches[3];
 				if(!stristr($name,"hub")){
 					$ret[] = array($venID,$devID,$name);
 				}

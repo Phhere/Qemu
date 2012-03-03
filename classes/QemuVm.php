@@ -25,7 +25,7 @@ class QemuVm {
 			$this->name = $data['name'];
 			$this->password = $data['password'];
 			
-			$get = mysql_query("SELECT *,i.path,i.type FROM vm_images v JOIN images i ON i.imageID=v.imageID WHERE v.imageID = ".$this->vmID);
+			$get = mysql_query("SELECT *,i.path,i.type FROM vm_images v JOIN images i ON i.imageID=v.imageID WHERE v.vmID = ".$this->vmID);
 			while($ds = mysql_fetch_assoc($get)){
 				$this->images[] = array('path'=>$ds['path'],'type'=>$ds['type']);
 			}
@@ -42,8 +42,19 @@ class QemuVm {
 		}
 		$cmd .=" -m ".$this->ram;
 		
+		$usb = false;
 		foreach($this->images as $image){
-			$cmd .=" -".$image['type']." ".$image['path'];
+			if($image['type'] == "usb"){
+				$usb = true;
+				$cmd .=" -usbdevice host:".$image['path'];
+			}
+			else{
+				$cmd .=" -".$image['type']." ".$image['path'];
+			}
+		}
+		
+		if($usb){
+			$cmd .= ' -usb';
 		}
 		
 		$cmd .=" -localtime";
@@ -177,7 +188,7 @@ class QemuVm {
 		$img = $ppm->read($filename.".ppm");
 		if(is_resource($img[1])){
 			unlink($filename.".ppm");
-			return imagepng($img[1],$filename,4);
+			return imagepng($img[1],$filename.".png",4);
 		}
 		else{
 			return false;
@@ -194,9 +205,9 @@ class QemuVm {
 			$WshShell->Run($cmd, 0, false);
 		}
 		else{
-			$cmd = $cmd." > ".$GLOBALS['config']['log_path'].'\vm_'.$this->vmID."_".date("Y_m_d").".log &";
+			$cmd = $cmd." > ".$GLOBALS['config']['log_path'].'/vm_'.$this->vmID."_".date("Y_m_d").".log &";
 			exec($cmd);
 		}
-		//echo $cmd;
+		echo $cmd;
 	}
 }
