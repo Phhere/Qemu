@@ -11,21 +11,29 @@ if(isset($_SESSION['user'])){
 
 	if(isset($_POST['save'])){
 		if($_SESSION['user']->role['vm_create'] == 1){
-			$do = mysql_query("INSERT INTO vm (owner,name,ram,password,params,persistent) VALUES
-			('".mysql_real_escape_string($_POST['owner'])."',
-			 '".mysql_real_escape_string($_POST['name'])."',
-			 '".mysql_real_escape_string($_POST['ram'])."',
-			 '".mysql_real_escape_string($_POST['password'])."',
-			 '".mysql_real_escape_string($_POST['params'])."',
-			 '".isset($_POST['persistent'])."')");
+				
+			$query = $GLOBALS['pdo']->prepare("INSERT INTO vm (owner,name,ram,password,params,persistent) VALUES (:owner,:name,:ram,:password,:params,:persostemt)");
+			$query->bindValue(':owner',$_POST['owner'],PDO::PARAM_STR);
+			$query->bindValue(':name',$_POST['name'],PDO::PARAM_STR);
+			$query->bindValue(':ram',$_POST['ram'],PDO::PARAM_STR);
+			$query->bindValue(':password',$_POST['password'],PDO::PARAM_STR);
+			$query->bindValue(':params',$_POST['params'],PDO::PARAM_STR);
+			$query->bindValue(':persistent',isset($_POST['persistent']),PDO::PARAM_INT);
+				
+			$do = $query->execute();
 			if($do){
-				$id = mysql_insert_id();
+				$id = $GLOBALS['pdo']->lastInsertId();
+
+				$query = $GLOBALS['pdo']->prepare("INSERT INTO vm_images (vmID,imageID) VALUES (:vmID,:imageID)");
+				$query->bindValue(':vmID',$id,PDO::PARAM_INT);
+				$query->bindParam(':vmID',$image,PDO::PARAM_INT);
+
 				foreach($_POST['image'] as $image){
 					if($image != "0"){
-						mysql_query("INSERT INTO vm_images (vmID,imageID) VALUES ('".$id."','".$image."')");
+						$query->execute();
 					}
 				}
-				
+
 				$tmp->assign('message',"<div class='notice success'>Die Daten wurden gespeichert.</div>");
 			}
 			else{
@@ -34,23 +42,33 @@ if(isset($_SESSION['user'])){
 		}
 	}
 	elseif(isset($_POST['save_edit'])){
-		$id = $_POST['vm'];
+		$id = (int)$_POST['vm'];
 		if($_SESSION['user']->role['vm_edit'] == 1){
-			mysql_query("UPDATE vm SET owner='".mysql_real_escape_string($_POST['owner'])."',
-			name='".mysql_real_escape_string($_POST['name'])."', 
-			ram='".mysql_real_escape_string($_POST['ram'])."',
-			password='".mysql_real_escape_string($_POST['password'])."',
-			params='".mysql_real_escape_string($_POST['params'])."',
-			persistent='".isset($_POST['persistent'])."'
-				 WHERE vmID='".$id."'");
 			
-			mysql_query("DELETE FROM vm_images WHERE vmID='".$id."'");
+			$query = $GLOBALS['pdo']->prepare("UPDATE vm SET owner= :owner, name= :name, ram= :ram, password= :password, params= :params, persistent = :persistent WHERE vmID= :vmID");
+			$query->bindValue(':owner', $_POST['owner'], PDO::PARAM_INT);
+			$query->bindValue(':name', $_POST['name'], PDO::PARAM_STR);
+			$query->bindValue(':ram', $_POST['ram'], PDO::PARAM_INT);
+			$query->bindValue(':password', $_POST['password'], PDO::PARAM_STR);
+			$query->bindValue(':params', $_POST['params'], PDO::PARAM_STR);
+			$query->bindValue(':persistent', isset($_POST['persistent']), PDO::PARAM_INT);
+			$query->bindValue(':vmID', $id, PDO::PARAM_INT);
+			$query->execute();			
+			
+			$query = $GLOBALS['pdo']->prepare("DELETE FROM vm_images WHERE vmID= :vmID");
+			$query->bindValue(':vmID', $id, PDO::PARAM_INT);
+			$query->execute();
+			
+			$query = $GLOBALS['pdo']->prepare("INSERT INTO vm_images (vmID,imageID) VALUES (:vmID,:imageID)");
+			$query->bindValue(':vmID',$id,PDO::PARAM_INT);
+			$query->bindParam(':vmID',$image,PDO::PARAM_INT);
+
 			foreach($_POST['image'] as $image){
 				if($image != "0"){
-					mysql_query("INSERT INTO vm_images (vmID,imageID) VALUES ('".$id."','".$image."')");
+					$query->execute();
 				}
 			}
-			
+				
 			$tmp->assign('message',"<div class='notice success'>Die Daten wurden gespeichert.</div>");
 		}
 	}
@@ -112,17 +130,17 @@ if(isset($_SESSION['user'])){
 		if($_SESSION['user']->role['vm_create'] == 1){
 
 			$owner = '<option value="0">--</option>';
-			$get = mysql_query("SELECT userID, email FROM users");
-			while($ds = mysql_fetch_assoc($get)){
+			$query = $GLOBALS['pdo']->query("SELECT userID, email FROM users");
+			while($ds = $query->fetch()){
 				$owner .= '<option value="'.$ds['userID'].'">'.$ds['email'].'</option>';
 			}
 
 			$image = '<option value="0">--</option>';
-			$get = mysql_query("SELECT imageID,type,name FROM images");
-			while($ds = mysql_fetch_assoc($get)){
+			$query = $GLOBALS['pdo']->query("SELECT imageID,type,name FROM images");
+			while($ds = $query->fetch()){
 				$image .= '<option value="'.$ds['imageID'].'">'.$ds['type'].' - '.$ds['name'].'</option>';
 			}
-			
+				
 			$tmp2 = new RainTPL();
 			$tmp2->assign('owner',$owner);
 			$tmp2->assign('image',$image);
@@ -133,37 +151,50 @@ if(isset($_SESSION['user'])){
 	}
 	elseif($action == "edit"){
 		$id = $_GET['vmID'];
-		$get = mysql_query("SELECT * FROM vm WHERE vmID='".$id."'");
-		if(mysql_num_rows($get)){
-			$data = mysql_fetch_array($get);
+		
+		$query = $GLOBALS['pdo']->prepare("SELECT * FROM vm WHERE vmID= :vmID");
+		$query->bindValue(':vmID', $id, PDO::PARAM_INT);
+		$query->execute();
+		
+		if($query->rowCount()){
+			$data = $query->fetch();
 			if($data['status'] == QemuMonitor::SHUTDOWN){
 				$owner = '';
-				$get = mysql_query("SELECT userID, email FROM users");
-				while($ds = mysql_fetch_assoc($get)){
+				
+				$query2 = $GLOBALS['pdo']->query("SELECT userID, email FROM users");
+				
+				while($ds = $query2->fetch()){
 					$owner .= '<option value="'.$ds['userID'].'">'.$ds['email'].'</option>';
 				}
 
 				$owner = str_replace('value="'.$data['owner'].'"','value="'.$data['owner'].'" selected="selected"',$owner);
 
 				$image_list = '<option value="0">--</option>';
-				$get = mysql_query("SELECT imageID,type,name FROM images");
-				while($ds = mysql_fetch_assoc($get)){
+				$query2 = $GLOBALS['pdo']->query("SELECT imageID,type,name FROM images");
+				while($ds = $query2->fetch()){
 					$image_list .= '<option value="'.$ds['imageID'].'">'.$ds['type'].' - '.$ds['name'].'</option>';
 				}
 
 				$images = array();
 				$i=1;
-				$get = mysql_query("SELECT * FROM vm_images WHERE vmID='".$id."'");
-				while($ds = mysql_fetch_assoc($get)){
+				
+				$query3 = $GLOBALS['pdo']->prepare("SELECT * FROM vm_images WHERE vmID= :vmID");
+				$query3->bindValue(':vmID', $id, PDO::PARAM_INT);
+				$query3->execute();
+				
+				while($ds = $query3->fetch()){
 					$image = str_replace('value="'.$ds['imageID'].'"','value="'.$ds['imageID'].'" selected="selected"',$image_list);
 					$images[] = array('image'=>$image,'counter'=>$i);
 					$i++;
 				}
-				
+				if(count($images) == 0){
+					$images[] = array('image'=>$image_list,'counter'=>1);
+				}
+
 
 				if($data['persistent']) $persistent = "checked='checked'";
 				else $persistent = '';
-				
+
 				$tmp2 = new RainTPL();
 				$tmp2->assign('name',$data['name']);
 				$tmp2->assign('owner',$owner);
@@ -174,7 +205,7 @@ if(isset($_SESSION['user'])){
 				$tmp2->assign('persistent',$persistent);
 				$tmp2->assign('images',$images);
 				$tmp->assign('content',$tmp2->draw('vms_edit',true));
-				
+
 			}
 			else{
 				$tmp->assign('content',"<div class='notice warning'>Die VM scheint zu laufen und kann so nicht bearbeitet werden.</div>");
@@ -191,10 +222,16 @@ if(isset($_SESSION['user'])){
 
 		$tmp2 = new RainTPL();
 
-		$get = mysql_query("SELECT * FROM vm");
-		if(mysql_num_rows($get)){
+		$query = $GLOBALS['pdo']->query("SELECT * FROM vm");
+		
+		$query2 = $GLOBALS['pdo']->prepare("SELECT *,i.path,i.type FROM vm_images v JOIN images i ON i.imageID=v.imageID WHERE v.vmID = :vmID");
+		$query2->bindParam(':vmID', $vmID,PDO::PARAM_INT);
+		
+		if($query->rowCount()){
 			$vms = array();
-			while($ds = mysql_fetch_assoc($get)){
+			while($ds = $query->fetch()){
+				$vmID = $ds['vmID'];
+				
 				if($ds['lastrun'] != '0000-00-00 00:00:00'){
 					$lastrun = date("d.m.Y H:i", strtotime($ds['lastrun']));
 				}
@@ -216,14 +253,14 @@ if(isset($_SESSION['user'])){
 				$vm['ram'] = FileSystem::formatFileSize($ds['ram']*1024*1024,0);
 				$vm['lastrun'] = $lastrun;
 				$vm['buttons'] = $buttons;
-				
+
 				$images = array();
-				$get2 = mysql_query("SELECT *,i.path,i.type FROM vm_images v JOIN images i ON i.imageID=v.imageID WHERE v.imageID = ".$ds['vmID']);
-				while($dq = mysql_fetch_assoc($get2)){
+				$query2->execute();
+				while($dq = $query2->fetch()){
 					$images[] = $dq['name'];
 				}
 				$vm['images'] = implode(", ",$images);
-				
+
 				$vms[] = $vm;
 			}
 			$tmp2->assign('vms',$vms);

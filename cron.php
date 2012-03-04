@@ -4,8 +4,12 @@ include './classes/Helper.class.php';
 
 Helper::loadClasses();
 
-$get = mysql_query("SELECT * FROM vm WHERE status='".QemuMonitor::RUNNING."' AND persistent='0'");
-while($ds = mysql_fetch_assoc($get)){
+$query = $GLOBALS['pdo']->prepare("SELECT * FROM vm WHERE status=:status AND persistent=:persistent");
+$query->bindValue(":status",QemuMonitor::RUNNING,PDO::PARAM_INT);
+$query->bindValue(":persisent",0,PDO::PARAM_INT);
+$query->execute();
+
+while($ds = $query->fetch()){
 	$last_ping = strtotime($ds['last_ping']);
 	if($last_ping < time() - (int)$GLOBALS['config']['ping_timeout']){
 		$vm = new QemuVm($ds['vmID']);
@@ -22,3 +26,4 @@ while($ds = mysql_fetch_assoc($get)){
 		}
 	}
 }
+$query = null;

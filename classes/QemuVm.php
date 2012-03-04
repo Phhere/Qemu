@@ -15,9 +15,13 @@ class QemuVm {
 		$this->host = "localhost";
 		$this->vmID = $id;
 		$this->images = array();
-		$get = mysql_query("SELECT * FROM vm WHERE vmID='".$this->vmID."'");
-		if(mysql_num_rows($get)){
-			$data = mysql_fetch_assoc($get);
+		
+		$query = $GLOBALS['pdo']->prepare("SELECT * FROM vm WHERE vmID= :vmID");
+		$query->bindValue(':vmID', $this->vmID, PDO::PARAM_INT);
+		$query->execute();
+		
+		if($query->rowCount()){
+			$data = $query->fetch();
 			$this->ram = $data['ram'];
 			$this->monitor_port = $GLOBALS['config']['monitorport_min'] + (int)$data['vmID'];
 			$this->vnc_port = $GLOBALS['config']['vncport_min'] + (int)$data['vmID'];
@@ -25,8 +29,11 @@ class QemuVm {
 			$this->name = $data['name'];
 			$this->password = $data['password'];
 			
-			$get = mysql_query("SELECT *,i.path,i.type FROM vm_images v JOIN images i ON i.imageID=v.imageID WHERE v.vmID = ".$this->vmID);
-			while($ds = mysql_fetch_assoc($get)){
+			$query2 = $GLOBALS['pdo']->prepare("SELECT *,i.path,i.type FROM vm_images v JOIN images i ON i.imageID=v.imageID WHERE v.vmID = :vmID");
+			$query2->bindValue(':vmID', $this->vmID, PDO::PARAM_INT);
+			$query2->execute();
+			
+			while($ds = $query2->fetch()){
 				$this->images[] = array('path'=>$ds['path'],'type'=>$ds['type']);
 			}
 		}
@@ -62,7 +69,10 @@ class QemuVm {
 		$cmd .=" -vnc :".$this->vmID.",password";
 			
 		$this->executeStart($cmd);
-		mysql_query("UPDATE vm SET lastrun=NOW(),last_ping=NOW() WHERE vmID='".$this->vmID."'");
+		$query = $GLOBALS['pdo']->prepare("UPDATE vm SET lastrun=NOW(),last_ping=NOW() WHERE vmID= :vmID");
+		$query->bindValue(':vmID', $this->vmID, PDO::PARAM_INT);
+		$query->execute();
+		
 		if($this->password != ""){
 			$this->connect();
 			$this->setVncPassword($this->password);
@@ -71,7 +81,10 @@ class QemuVm {
 
 	public function setStatus($status){
 		$this->status = $status;
-		mysql_query("UPDATE vm SET status='".$status."' WHERE vmID='".$this->vmID."'");
+		$query = $GLOBALS['pdo']->prepare("UPDATE vm SET status=:status WHERE vmID= :vmID");
+		$query->bindValue(':vmID', $this->vmID, PDO::PARAM_INT);
+		$query->bindValue(':status', $status, PDO::PARAM_INT);
+		$query->execute();
 	}
 	
 	/**

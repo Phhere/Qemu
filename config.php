@@ -1,12 +1,18 @@
 <?php
 session_start();
 
-mysql_connect("localhost","user","pass");
-mysql_select_db("qemu");
+try{
+	$dsn = 'mysql:dbname=qemu;host=localhost';
+	$user = 'user';
+	$password = 'pass';
+	$GLOBALS['pdo'] = new PDO($dsn, $user, $password);
+}
+catch(Exception $e){
+	die($e);
+}
 
 $GLOBALS['config'] = array();
-$get = mysql_query("SELECT * FROM config");
-while($ds = mysql_fetch_assoc($get)){
+foreach($GLOBALS['pdo']->query("SELECT * FROM config") as $ds){
 	$GLOBALS['config'][$ds['key']] = $ds['value'];
 }
 

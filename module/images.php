@@ -14,6 +14,15 @@ if(isset($_SESSION['user'])){
 		if(isset($_POST['save_new'])){
 			$do = false;
 			if($_SESSION['user']->role['image_create'] == 1){
+				
+				$query = $GLOBALS['pdo']->prepare("INSERT INTO images (name,path,type,deleteable) VALUES (:name, :path, :type, :deleteable)");
+				$query->bindParam(":name",$_POST['name'],PDO::PARAM_STR);
+				$query->bindParam(":type",$type,PDO::PARAM_STR);
+				$query->bindParam(":type",$path,PDO::PARAM_STR);
+				$query->bindValue(":deleteable",!isset($_POST['deleteable']),PDO::PARAM_INT);
+				
+				$type = $_POST['type'];
+				
 				if($_POST['tab'] == "tab2"){
 					$path = $_POST['path_create'];
 					exec($GLOBALS['config']['qemu_img_executable']." create -f ".$_POST['create_type']." ".$_POST['path_create']." ".$_POST['create_size']);
@@ -32,7 +41,10 @@ if(isset($_SESSION['user'])){
 					}
 				}
 				elseif(file_exists($_POST['path']) && is_file($_POST['path']) && $_POST['path'] != $GLOBALS['config']['qemu_image_folder']){
-					if(mysql_num_rows(mysql_query("SELECT path FROM images WHERE path='".mysql_real_escape_string($_POST['path'])."'")) == 0){
+					$query2 = $GLOBALS['pdo']->prepare("SELECT path FROM images WHERE path= :path");
+					$query2->bindValue(":path",$_POST['path'],PDO::PARAM_STR);
+					$query2->execute();
+					if($query2->rowCount() == 0){
 						$do = true;
 						$tmp->assign('message','<div class="notice success">Neues Image angelegt</div>');
 					}
@@ -47,13 +59,21 @@ if(isset($_SESSION['user'])){
 					$action = 'new';
 				}
 				if($do){
-					mysql_query("INSERT INTO images (name,path,type,deleteable) VALUES ('".mysql_real_escape_string($_POST['name'])."', '".mysql_real_escape_string($path)."', '".mysql_real_escape_string($_POST['type'])."', '".!isset($_POST['deleteable'])."')");
+					$query->execute();
 				}
 			}
 		}
 		elseif(isset($_POST['save_edit'])){
 			if($_SESSION['user']->role['image_edit'] == 1){
 				$do = false;
+				$query = $GLOBALS['pdo']->prepare("UPDATE images SET name = :name, path = :path, type=:type, deleteable = :deleteable  WHERE imageID= :imageID");
+				
+				$query->bindValue(':name',$_POST['name'],PDO::PARAM_STR);
+				$query->bindValue(':type',$_POST['type'],PDO::PARAM_STR);
+				$query->bindValue(':deleteable',!isset($_POST['deleteable']),PDO::PARAM_INT);
+				$query->bindValue(':imageID',$_POST['image'],PDO::PARAM_INT);
+				$query->bindParam(':path',$path,PDO::PARAM_STR);
+				
 				if($_POST['type'] == "usb"){
 					$path = $_POST['path_usb'];
 					if($path != "0"){
@@ -65,18 +85,30 @@ if(isset($_SESSION['user'])){
 					$do = true;
 				}
 				if($do){
-					mysql_query("UPDATE images SET name = '".mysql_real_escape_string($_POST['name'])."',path = '".mysql_real_escape_string($path)."',type = '".mysql_real_escape_string($_POST['type'])."', deleteable='".!isset($_POST['deleteable'])."' WHERE imageID='".$_POST['image']."'");
+					$query->execute();
 				}
 			}
 		}
 		elseif($action =='delete'){
 			$id = $_GET['image'];
-			if(mysql_num_rows(mysql_query("SELECT v.vmID FROM vm_images i LEFT JOIN vm v ON v.vmID=i.vmID WHERE v.status='".QemuMonitor::RUNNING."' AND i.imageID='".mysql_real_escape_string($id)."'"))){
+			
+			$query = $GLOBALS['pdo']->prepare("SELECT v.vmID FROM vm_images i LEFT JOIN vm v ON v.vmID=i.vmID WHERE v.status= :status AND i.imageID= :imageID");
+			$query->bindValue(":status",QemuMonitor::RUNNING,PDO::PARAM_INT);
+			$query->bindValue(":imageID",$id,PDO::PARAM_INT);
+			$query->execute();
+			
+			if($query->rowCount() > 0){
 				$tmp->assign('message','<div class="notice notice">Das Image wird noch in einer VM genutzt</div>');
 			}
 			else{
-				mysql_query("DELETE FROM images WHERE imageID='".$id."'");
-				mysql_query("DELETE FROM vm_images WHERE imageID='".$id."'");
+				$query = $GLOBALS['pdo']->prepare("DELETE FROM images WHERE imageID= :imageID");
+				$query->bindValue(":imageID",$id,PDO::PARAM_INT);
+				$query->execute();
+				
+				$query = $GLOBALS['pdo']->prepare("DELETE FROM vm_images WHERE imageID= :imageID");
+				$query->bindValue(":imageID",$id,PDO::PARAM_INT);
+				$query->execute();
+				
 				$tmp->assign('message','<div class="notice success">Image erfolgreich gelöscht</div>');
 			}
 		}
@@ -165,9 +197,13 @@ if(isset($_SESSION['user'])){
 			if($_SESSION['user']->role['image_edit'] == 1){
 				
 				$image = $_GET['image'];
-				$get = mysql_query("SELECT * FROM images WHERE imageID='".mysql_real_escape_string($image)."'");
-				if(mysql_num_rows($get)){
-					$data = mysql_fetch_assoc($get);
+				
+				$query = $GLOBALS['pdo']->prepare("SELECT * FROM images WHERE imageID= :imageID");
+				$query->bindValue(":imageID",$image,PDO::PARAM_INT);
+				$query->execute();
+				
+				if($query->rowCount()>0){
+					$data = $query->fetch();
 
 					$types = str_replace('value="'.$data['type'].'"', 'value="'.$data['type'].'" selected="selected"', $GLOBALS['device_types']);
 					
@@ -223,9 +259,13 @@ if(isset($_SESSION['user'])){
 		}
 		elseif($action == 'status'){
 			$image = $_GET['image'];
-			$get = mysql_query("SELECT * FROM images WHERE imageID='".mysql_real_escape_string($image)."'");
-			if(mysql_num_rows($get)){
-				$data = mysql_fetch_assoc($get);
+			
+			$query = $GLOBALS['pdo']->prepare("SELECT * FROM images WHERE imageID= :imageID");
+			$query->bindValue(":imageID",$image,PDO::PARAM_INT);
+			$query->execute();
+			
+			if($query->rowCount()>0){
+				$data = $query->fetch();
 				
 				$tmp2 = new RainTPL();
 				
@@ -253,11 +293,13 @@ if(isset($_SESSION['user'])){
 			
 			$tmp2 = new RainTPL();
 			
-			$get = mysql_query("SELECT i.*,v.status FROM images i LEFT JOIN vm_images t ON t.imageID = i.imageID LEFT JOIN vm v ON v.vmID = t.vmID");
-			echo mysql_error();
+			
+			$query = $GLOBALS['pdo']->prepare("SELECT i.*,v.status FROM images i LEFT JOIN vm_images t ON t.imageID = i.imageID LEFT JOIN vm v ON v.vmID = t.vmID");
+			$query->execute();
+			
 			$vms = array();
-			if(mysql_num_rows($get)){
-				while($ds = mysql_fetch_assoc($get)){
+			if($query->rowCount()){
+				while($ds = $query->fetch()){
 					$buttons = '';
 					if($_SESSION['user']->role['image_edit'] == 1){
 						$buttons .= '<a href="index.php?site=images&action=edit&image='.$ds['imageID'].'" class="button small center grey"><span class="icon" data-icon="G"></span>Edit</a>';

@@ -1,13 +1,23 @@
 <?php
 class Image {
 	static function getImagePath($imageID){
-		$get = mysql_query("SELECT path FROM images WHERE imageID='".$imageID."'");
-		$data = mysql_fetch_assoc($get);
+		
+		$query = $GLOBALS['pdo']->prepare("SELECT path FROM images WHERE imageID= :imageID");
+		$query->bindValue(':imageID', $imageID, PDO::PARAM_INT);
+		$query->execute();
+		
+		$data = $query->fetch();
+		
 		return $data['path'];
 	}
 	static function getImageType($imageID){
-		$get = mysql_query("SELECT type FROM images WHERE imageID='".$imageID."'");
-		$data = mysql_fetch_assoc($get);
+		
+		$query = $GLOBALS['pdo']->prepare("SELECT type FROM images WHERE imageID= :imageID");
+		$query->bindValue(':imageID', $imageID, PDO::PARAM_INT);
+		$query->execute();
+		
+		$data = $query->fetch();
+		
 		return $data['type'];
 	}
 	static function getStatus($imageID){

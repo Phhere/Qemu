@@ -15,8 +15,12 @@ class Helper {
 
 	static function isOwner($vmID){
 		if(isset($_SESSION['user'])){
-			$get = mysql_query("SELECT owner FROM vm WHERE vmID = '".$vmID."' AND owner = '".$_SESSION['user']->id."'");
-			if(mysql_num_rows($get)){
+			$query = $GLOBALS['pdo']->prepare("SELECT owner FROM vm WHERE vmID = :vmID AND owner = :owner");
+			$query->bindValue(':vmID', $vmID, PDO::PARAM_INT);
+			$query->bindValue(':owner', $_SESSION['user']->id, PDO::PARAM_INT);
+			$query->execute();
+			
+			if($query->rowCount()>0){
 				return true;
 			}
 			elseif($_SESSION['user']->role['vm_create'] == 1){
@@ -30,8 +34,12 @@ class Helper {
 	}
 
 	static function hasRessources($ram_needed) {
-		$get = mysql_query("SELeCT count(vmId) AS `running` FROM vm WHERE status = '".QemuMonitor::RUNNING."'");
-		$data = mysql_fetch_assoc($get);
+		
+		$query = $GLOBALS['pdo']->prepare("SELECT count(vmId) AS `running` FROM vm WHERE status = :status");
+		$query->bindValue(':status',QemuMonitor::RUNNING , PDO::PARAM_INT);
+		$query->execute();
+		
+		$data = $query->fetch();
 		
 		$run = true;
 		
@@ -40,8 +48,12 @@ class Helper {
 		}
 		
 		if($_SESSION['user']->role['vm_create'] == 0){
-			$get = mysql_query("SELECT count(vmId) AS `running` FROM vm WHERE status = '".QemuMonitor::RUNNING."' AND owner='".$_SESSION['user']->id."'");
-			$data = mysql_fetch_assoc($get);
+			$query2 = $GLOBALS['pdo']->prepare("SELECT count(vmId) AS `running` FROM vm WHERE status = :status AND owner= :owner");
+			$query2->bindValue(':status',QemuMonitor::RUNNING , PDO::PARAM_INT);
+			$query2->bindValue(':owner',$_SESSION['user']->id, PDO::PARAM_INT);
+			$query2->execute();
+			
+			$data = $query2->fetch();
 			if($data['running'] > $GLOBALS['config']['running_vms']){
 				$run = self::USER_LIMIT;
 			}
@@ -55,15 +67,22 @@ class Helper {
 		return $run;
 	}
 	
-	static function getUserName($roleID){
-		$get = mysql_query("SELECT email FROM users WHERE userID='".$roleID."'");
-		$data = mysql_fetch_assoc($get);
+	static function getUserName($userID){
+		$query = $GLOBALS['pdo']->prepare("SELECT email FROM users WHERE userID= :userID");
+		$query->bindValue(':userID', $userID, PDO::PARAM_INT);
+		$query->execute();
+		
+		$data = $query->fetch();
 		return $data['email'];
 	}
 	
 	static function getRoleName($roleID){
-		$get = mysql_query("SELECT name FROM roles WHERE roleID='".$roleID."'");
-		$data = mysql_fetch_assoc($get);
+		
+		$query = $GLOBALS['pdo']->prepare("SELECT name FROM roles WHERE roleID= :role");
+		$query->bindValue(':role', $roleID, PDO::PARAM_INT);
+		$query->execute();
+		
+		$data = $query->fetch();
 		return $data['name'];
 	}
 	static function getRamSettings(){

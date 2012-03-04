@@ -23,9 +23,14 @@ include './boxes/navigation.php';
 
 $GLOBALS['template']->assign('ping','');
 if(isset($_SESSION['user'])){
-	$get = mysql_query("SELECT count(*) AS `running` FROM vm WHERE owner = '".$_SESSION['user']->id."' AND status='".QemuMonitor::RUNNING."' AND persistent='0'");
-	$data = mysql_fetch_assoc($get);
-	if($data['running']>0){
+	
+	$query = $GLOBALS['pdo']->prepare("SELECT count(*) AS `running` FROM vm WHERE owner = :owner AND status = :status  AND persistent = :persistent");
+	$query->bindValue(":owner",$_SESSION['user']->id,PDO::PARAM_INT);
+	$query->bindValue(":status",QemuMonitor::RUNNING,PDO::PARAM_INT);
+	$query->bindValue(":persistent",0,PDO::PARAM_INT);
+	$query->execute();
+	
+	if($query->rowCount()>0){
 		$GLOBALS['template']->assign('ping','<script type="text/javascript">window.ping=true;</script>');
 	}
 }

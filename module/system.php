@@ -2,10 +2,15 @@
 if(isset($_SESSION['user'])){
 	if($_SESSION['user']->role['system'] == 1){
 			
-		$get = mysql_query("SELECT count(vmID) AS `vms`, SUM(IF(status=1,1,0)) AS `vms_on` FROM vm");
-		$data = mysql_fetch_assoc($get);
+		$query = $GLOBALS['pdo']->prepare("SELECT count(vmID) AS `vms`, SUM(IF(status=1,1,0)) AS `vms_on` FROM vm");
+		$query->execute();
+		
+		$data = $query->fetch();
+		
+		$query = $GLOBALS['pdo']->prepare("SELECT imageID FROM images");
+		$query->execute();
 
-		$images=mysql_num_rows(mysql_query("SELECT imageID FROM images"));
+		$images=$query->rowCount();
 
 		$tmp = new RainTPL();
 		$tmp->assign('vms',$data['vms']);
@@ -48,9 +53,14 @@ if(isset($_SESSION['user'])){
 		
 		
 		if(isset($_POST['save'])){
+			
+			$query = $GLOBALS['pdo']->prepare("UPDATE config SET `value`= :value WHERE `key`= :key");
+			$query->bindParam(':value',$value,PDO::PARAM_STR);
+			$query->bindParam(':key',$key,PDO::PARAM_STR);
+			
 			foreach($_POST as $key => $value){
 				if(isset($GLOBALS['config'][$key])){
-					mysql_query("UPDATE config SET `value`='".mysql_real_escape_string($value)."' WHERE `key`='".$key."'");
+					$query->execute();
 					$GLOBALS['config'][$key] = $value;
 				}
 			}
@@ -59,13 +69,17 @@ if(isset($_SESSION['user'])){
 
 		
 		$roles = '';
-		$get = mysql_query("SELECT * FROM roles");
-		while($ds = mysql_fetch_assoc($get)){
+		
+		$query = $GLOBALS['pdo']->prepare("SELECT * FROM roles");
+		$query->execute();
+
+		while($ds = $query->fetch()){
 			if($ds['roleID'] == $GLOBALS['config']['default_role']) $selected = "selected='selected'";
 			else $selected = '';
 			$roles .= '<option value="'.$ds['roleID'].'" '.$selected.'>'.$ds['name'].'</option>';
 		}
 		$tmp->assign('roles',$roles);
+		
 		foreach($GLOBALS['config'] as $key => $value){
 			$tmp->assign($key,$value);
 		}

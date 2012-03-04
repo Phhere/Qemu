@@ -62,10 +62,13 @@ if(isset($_SESSION['user'])){
 	
 	$tmp2 = new RainTPL();
 	
-	$get = mysql_query("SELECT * FROM vm WHERE owner = '".$_SESSION['user']->id."'");
-	if(mysql_num_rows($get)){
+	$query = $GLOBALS['pdo']->prepare("SELECT * FROM vm WHERE owner = :owner");
+	$query->bindValue(":owner",$_SESSION['user']->id,PDO::PARAM_INT);
+	$query->execute();
+	
+	if($query->rowCount() > 0){
 		$vms = array();
-		while($ds = mysql_fetch_assoc($get)){
+		while($ds = $query->fetch()){
 			if($ds['lastrun'] != '0000-00-00'){
 				$lastrun = date("d.m.Y H:i", strtotime($ds['lastrun']));
 			}
