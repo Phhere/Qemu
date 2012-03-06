@@ -30,7 +30,9 @@ if(isset($_SESSION['user'])){
 	$query->bindValue(":persistent",0,PDO::PARAM_INT);
 	$query->execute();
 	
-	if($query->rowCount()>0){
+	$data = $query->fetch();
+	
+	if($data['running']>0){
 		$GLOBALS['template']->assign('ping','<script type="text/javascript">window.ping=true;</script>');
 	}
 }

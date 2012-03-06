@@ -16,9 +16,9 @@ if(isset($_SESSION['user'])){
 			if($_SESSION['user']->role['image_create'] == 1){
 				
 				$query = $GLOBALS['pdo']->prepare("INSERT INTO images (name,path,type,deleteable) VALUES (:name, :path, :type, :deleteable)");
-				$query->bindParam(":name",$_POST['name'],PDO::PARAM_STR);
+				$query->bindValue(":name",$_POST['name'],PDO::PARAM_STR);
 				$query->bindParam(":type",$type,PDO::PARAM_STR);
-				$query->bindParam(":type",$path,PDO::PARAM_STR);
+				$query->bindParam(":path",$path,PDO::PARAM_STR);
 				$query->bindValue(":deleteable",!isset($_POST['deleteable']),PDO::PARAM_INT);
 				
 				$type = $_POST['type'];
@@ -110,6 +110,54 @@ if(isset($_SESSION['user'])){
 				$query->execute();
 				
 				$tmp->assign('message','<div class="notice success">Image erfolgreich gelöscht</div>');
+			}
+		}
+		elseif($action == 'clone'){
+			$id = $_GET['image'];
+			$query = $GLOBALS['pdo']->prepare("SELECT * FROM images WHERE imageID= :imageID");
+			$query->bindValue(":imageID",$id,PDO::PARAM_INT);
+			$query->execute();
+			
+			$data = $query->fetch();
+			if($data['type'] != "usb"){
+				if(is_dir($data['path']) == false){
+					
+					$query = $GLOBALS['pdo']->prepare("INSERT INTO images (name,type,deleteable) VALUES (:name, :type, :deleteable)");
+					$query->bindValue(":name",$data['name'],PDO::PARAM_STR);
+					$query->bindValue(":type",$data['type'],PDO::PARAM_STR);
+					$query->bindValue(":deleteable",$data['deleteable'],PDO::PARAM_INT);
+					$do = $query->execute();
+										
+					if($do){
+						$id = $GLOBALS['pdo']->lastInsertId();
+						$name = explode(".",$data['path'],2);
+						$newname = $name[0]."_".$id.".".$name[1];
+						$copy = copy($data['path'],$newname);
+						if($copy){
+							$query = $GLOBALS['pdo']->prepare("UPDATE images SET path=:path WHERE imageID=:imageID");
+							$query->bindValue(":imageID",$id,PDO::PARAM_INT);
+							$query->bindValue(":path",$newname,PDO::PARAM_STR);
+							$query->execute();
+							
+							$tmp->assign('message','<div class="notice successful">Datei erfolgreich geklont</div>');
+						}
+						else{
+							$query = $GLOBALS['pdo']->prepare("DELETE FROM images WHERE imageID=:imageID");
+							$query->bindValue(":imageID",$id,PDO::PARAM_INT);
+							$query->execute();
+							$tmp->assign('message','<div class="notice successful">Datei konnte nicht kopiert werden</div>');
+						}
+					}
+					else{
+						$tmp->assign('message','<div class="notice error">Fehler</div>');
+					}
+				}
+				else{
+					$tmp->assign('message','<div class="notice error">Ordner können nicht geklont werden.</div>');
+				}
+			}
+			else{
+				$tmp->assign('message','<div class="notice error">USB-Geräte können nicht geklont werden.</div>');
 			}
 		}
 		
@@ -272,15 +320,20 @@ if(isset($_SESSION['user'])){
 				$tmp2->assign('path',$data['path']);
 				
 				$status = Image::getStatus($data['imageID']);
-				if(isset($status['type'])){
-					$tmp2->assign('type',$status['type']);
-					$tmp2->assign('virtual_size',FileSystem::formatFileSize($status['virtual_size']));
-					$tmp2->assign('real_size',$status['real_size']);
+				if($data['type']=="usb"){
+					$tmp2->assign('type',"USB");
 				}
 				else{
-					$tmp2->assign('type','n/a');
-					$tmp2->assign('virtual_size','n/a');
-					$tmp2->assign('real_size','n/a');
+					if(isset($status['type'])){
+						$tmp2->assign('type',$status['type']);
+						$tmp2->assign('virtual_size',FileSystem::formatFileSize($status['virtual_size']));
+						$tmp2->assign('real_size',FileSystem::formatFileSize(Helper::toBytes($status['real_size'])));
+					}
+					else{
+						$tmp2->assign('type','n/a');
+						$tmp2->assign('virtual_size','n/a');
+						$tmp2->assign('real_size','n/a');
+					}
 				}
 				
 				$tmp->assign('content',$tmp2->draw('images_status',true));
@@ -309,6 +362,10 @@ if(isset($_SESSION['user'])){
 					}
 					if($ds['status'] == QemuMonitor::SHUTDOWN){
 						$buttons .= '<a href="index.php?site=images&action=status&image='.$ds['imageID'].'" class="button small center grey"><span class="icon" data-icon="v"></span> Status</a>';
+					}
+					
+					if($ds['type'] != 'usb' && is_dir($ds['path']) == false){
+						$buttons .='<a href="index.php?site=images&action=clone&image='.$ds['imageID'].'" class="button small center grey"><span class="icon" data-icon="R"></span>Clone</a>';
 					}
 					
 					$obj = array();
