@@ -163,6 +163,16 @@ class Helper {
 		}
 	}
 	
+	static function getUsbDeviceName($identifier){
+		$devices = self::getUSBDevices();
+		foreach($devices as $device){
+			if($device[0].":".$device[1] == $identifier){
+				return $device[2];
+			}
+		}
+		return "unknown";
+	}
+	
 	static function toBytes($val) {
 		$val = trim($val);
 		$last = strtolower($val[strlen($val)-1]);

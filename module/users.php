@@ -18,10 +18,11 @@ if(isset($_SESSION['user'])){
 				 * @todo Mail versenden
 				 */
 
-				$query = $GLOBALS['pdo']->prepare("INSERT INTO users (role, email, password) VALUES (:role,:email,:pass)");
+				$query = $GLOBALS['pdo']->prepare("INSERT INTO users (role, email, password, username) VALUES (:role,:email,:pass,:username)");
 				$query->bindValue(':role',$_POST['role'],PDO::PARAM_INT);
 				$query->bindValue(':email',$_POST['email'],PDO::PARAM_STR);
 				$query->bindValue(':pass',md5($_POST['pass']),PDO::PARAM_STR);
+				$query->bindValue(':username',$_POST['username'],PDO::PARAM_STR);
 				$query->execute();
 
 				$tmp->assign('content',"<div class='notice success'>Benutzer wurde gespeichert</div>");
@@ -30,8 +31,10 @@ if(isset($_SESSION['user'])){
 		elseif(isset($_POST['save_edit'])){
 			if($_SESSION['user']->role['user_edit'] == 1){
 
-				$query = $GLOBALS['pdo']->prepare("UPDATE users SET role = :role WHERE userID= :userID");
+				$query = $GLOBALS['pdo']->prepare("UPDATE users SET role = :role, username = :username, email=:email WHERE userID= :userID");
 				$query->bindValue(':role',$_POST['role'],PDO::PARAM_INT);
+				$query->bindValue(':username',$_POST['username'],PDO::PARAM_STR);
+				$query->bindValue(':email',$_POST['email'],PDO::PARAM_STR);
 				$query->bindValue(':userID',$_POST['user'],PDO::PARAM_INT);
 				$query->execute();
 
@@ -41,7 +44,7 @@ if(isset($_SESSION['user'])){
 		elseif($action =='delete'){
 			if($_SESSION['user']->role['user_remove'] == 1){
 
-				$query = $GLOBALS['pdo']->prepare("DELETE FROM users  WHERE userID= :userID");
+				$query = $GLOBALS['pdo']->prepare("DELETE FROM users WHERE userID= :userID");
 				$query->bindValue(':userID',$_GET['user'],PDO::PARAM_INT);
 				$query->execute();
 
@@ -57,11 +60,10 @@ if(isset($_SESSION['user'])){
 				$query->execute();
 
 				while($ds = $query->fetch()){
-					if($ds['roleID'] == $GLOBALS['config']['default_role']) $selected = "selected='selected'";
-					else $selected = '';
-					$roles .= '<option value="'.$ds['roleID'].'" '.$selected.'>'.$ds['name'].'</option>';
+					$roles .= '<option value="'.$ds['roleID'].'">'.$ds['name'].'</option>';
 				}
 
+				$roles = str_replace('value="'.$GLOBALS['config']['default_role'].'"', 'value="'.$GLOBALS['config']['default_role'].'" selected="selected"', $roles);
 
 				$tmp2 = new RainTPL();
 				$tmp2->assign('roles',$roles);
@@ -92,6 +94,7 @@ if(isset($_SESSION['user'])){
 
 					$tmp2 = new RainTPL();
 					$tmp2->assign('email',$data['email']);
+					$tmp2->assign('username',$data['username']);
 					$tmp2->assign('role',$user_role);
 					$tmp2->assign('userID',$data['userID']);
 					$tmp->assign('content',$tmp2->draw('user_edit',true));

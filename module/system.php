@@ -74,10 +74,11 @@ if(isset($_SESSION['user'])){
 		$query->execute();
 
 		while($ds = $query->fetch()){
-			if($ds['roleID'] == $GLOBALS['config']['default_role']) $selected = "selected='selected'";
-			else $selected = '';
-			$roles .= '<option value="'.$ds['roleID'].'" '.$selected.'>'.$ds['name'].'</option>';
+			$roles .= '<option value="'.$ds['roleID'].'">'.$ds['name'].'</option>';
 		}
+		
+		$roles = str_replace('value="'.$GLOBALS['config']['default_role'].'"', 'value="'.$GLOBALS['config']['default_role'].'" selected="selected"', $roles);
+		
 		$tmp->assign('roles',$roles);
 		
 		foreach($GLOBALS['config'] as $key => $value){
