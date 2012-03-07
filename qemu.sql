@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Erstellungszeit: 01. Mrz 2012 um 00:08
+-- Erstellungszeit: 07. Mrz 2012 um 14:58
 -- Server Version: 5.5.15
 -- PHP-Version: 5.3.8
 
@@ -48,6 +48,7 @@ INSERT INTO `config` (`key`, `value`) VALUES
 ('qemu_executable', 'H:\\Web\\htdocs\\Qemu\\bin\\qemu.exe'),
 ('qemu_image_folder', 'H:\\Web\\htdocs\\Qemu\\bin\\images'),
 ('qemu_img_executable', 'H:\\Web\\htdocs\\Qemu\\bin\\qemu-img.exe'),
+('screenshot_dir', 'H:\\Web\\htdocs\\Qemu\\bin\\logs\\screenshots'),
 ('vncport_min', '5900');
 
 -- --------------------------------------------------------
@@ -61,16 +62,18 @@ CREATE TABLE IF NOT EXISTS `images` (
   `name` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `path` text COLLATE utf8_unicode_ci NOT NULL,
   `type` text COLLATE utf8_unicode_ci NOT NULL,
+  `deleteable` smallint(1) NOT NULL,
   PRIMARY KEY (`imageID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=7 ;
 
 --
 -- Daten für Tabelle `images`
 --
 
-INSERT INTO `images` (`imageID`, `name`, `path`, `type`) VALUES
-(1, 'Linux Test', 'bin\\linux.img', 'hda'),
-(2, 'Ubuntu', 'bin\\ubuntu.iso', 'cdrom\r\n');
+INSERT INTO `images` (`imageID`, `name`, `path`, `type`, `deleteable`) VALUES
+(1, 'Linux Test', 'bin\\linux.img', 'hda', 1),
+(2, 'Ubuntu', 'bin\\ubuntu.iso', 'cdrom', 1),
+(4, 'CD-Rom-Laufwerk', '//./d', 'cdrom', 0);
 
 -- --------------------------------------------------------
 
@@ -113,6 +116,8 @@ INSERT INTO `roles` (`roleID`, `name`, `vm_create`, `vm_edit`, `vm_edit_image`, 
 
 CREATE TABLE IF NOT EXISTS `users` (
   `userID` smallint(4) NOT NULL AUTO_INCREMENT,
+  `username` varchar(25) COLLATE utf8_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `email` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `password` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `role` smallint(4) NOT NULL,
@@ -124,8 +129,8 @@ CREATE TABLE IF NOT EXISTS `users` (
 -- Daten für Tabelle `users`
 --
 
-INSERT INTO `users` (`userID`, `email`, `password`, `role`) VALUES
-(1, 'P.Rehs@gmx.net', '4a6589fc170093b5c1a20dfd9eb3ca8c', 1);
+INSERT INTO `users` (`userID`, `username`, `name`, `email`, `password`, `role`) VALUES
+(1, 'phreh100', 'Philipp Rehs', 'P.Rehs@gmx.net', '4a6589fc170093b5c1a20dfd9eb3ca8c', 1);
 
 -- --------------------------------------------------------
 
@@ -153,7 +158,7 @@ CREATE TABLE IF NOT EXISTS `vm` (
 --
 
 INSERT INTO `vm` (`vmID`, `name`, `owner`, `status`, `ram`, `lastrun`, `password`, `params`, `last_ping`, `persistent`) VALUES
-(1, 'Test', 1, 0, 256, '2012-02-29 14:04:47', '', '', '2012-02-29 14:14:09', 0),
+(1, 'Test', 1, 0, 256, '2012-03-04 13:05:30', '', '', '2012-03-04 13:05:30', 0),
 (2, 'Test2', 1, 0, 512, '2012-02-28 12:18:28', '', '', '0000-00-00 00:00:00', 0),
 (9, 'asdfasdf', 1, 0, 512, '0000-00-00 00:00:00', 'asdf', 'asdfasdf', '0000-00-00 00:00:00', 1);
 
