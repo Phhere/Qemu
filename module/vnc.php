@@ -2,8 +2,8 @@
 <?php
 if(isset($_SESSION['user'])){
 	$vmID = $_GET['vmID'];
-	if(isOwner($_GET['vmID'])){
-		$vm = new QemuVm($_GET['vmID']);
+	$vm = new QemuVm($_GET['vmID']);
+	if($vm->isOwner()){
 		if($vm->status == QemuMonitor::RUNNING){
 			/*?>
 			<!--[if !IE]>-->

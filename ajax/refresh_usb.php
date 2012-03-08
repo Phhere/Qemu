@@ -5,9 +5,9 @@ Helper::loadClasses();
 
 if(isset($_SESSION['user'])){
 	$usb = '';
-	$usb_list = Helper::getUSBDevices(true);
+	$usb_list = Server::getUSBDevices(true);
 	if(count($usb_list)){
-		foreach(Helper::getUSBDevices() as $dev){
+		foreach($usb_list as $dev){
 			$usb .= '<option value="'.$dev[0].':'.$dev[1].'">'.$dev[2].'</option>';
 		}
 	}

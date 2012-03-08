@@ -78,8 +78,8 @@ if(isset($_SESSION['user'])){
 
 	if($action == "start"){
 		$vm = new QemuVm($_GET['vmID']);
-		if(Helper::hasRessources($vm->ram)){
-			if(Helper::isOwner($_GET['vmID'])){
+		if(Server::hasRessources($vm->ram)){
+			if($vm->isOwner()){
 				if($vm->status == QemuMonitor::RUNNING){
 					$tmp->assign('content',"<div class='notice'>Die VM scheint bereits aus zu laufen.</div>");
 				}
@@ -103,8 +103,8 @@ if(isset($_SESSION['user'])){
 		}
 	}
 	elseif($action == "stop"){
-		if(Helper::isOwner($_GET['vmID'])){
-			$vm = new QemuVm($_GET['vmID']);
+		$vm = new QemuVm($_GET['vmID']);
+		if($vm->isOwner()){
 			if($vm->status == QemuMonitor::RUNNING){
 				try{
 					$vm->connect();
@@ -249,7 +249,7 @@ if(isset($_SESSION['user'])){
 				}
 				$vm = array();
 				$vm['name'] = $ds['name'];
-				$vm['owner'] = Helper::getUserName($ds['owner']);
+				$vm['owner'] = User::getUserName($ds['owner']);
 				$vm['ram'] = FileSystem::formatFileSize($ds['ram']*1024*1024,0);
 				$vm['lastrun'] = $lastrun;
 				$vm['buttons'] = $buttons;

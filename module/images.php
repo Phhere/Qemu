@@ -215,9 +215,9 @@ if(isset($_SESSION['user'])){
 				}
 
 				$usb = '';
-				$usb_list = Helper::getUSBDevices();
+				$usb_list = Server::getUSBDevices();
 				if(count($usb_list)){
-					foreach(Helper::getUSBDevices() as $dev){
+					foreach($usb_list as $dev){
 						$usb .= '<option value="'.$dev[0].':'.$dev[1].'">'.$dev[2].'</option>';
 					}
 				}
@@ -263,9 +263,9 @@ if(isset($_SESSION['user'])){
 					}
 						
 					$usb = '';
-					$usb_list = Helper::getUSBDevices();
+					$usb_list = Server::getUSBDevices();
 					if(count($usb_list)){
-						foreach(Helper::getUSBDevices() as $dev){
+						foreach($usb_list as $dev){
 							$usb .= '<option value="'.$dev[0].':'.$dev[1].'">'.$dev[2].'</option>';
 						}
 					}
@@ -326,7 +326,7 @@ if(isset($_SESSION['user'])){
 				$status = Image::getStatus($data['imageID']);
 				if($data['type']=="usb"){
 					$tmp2->assign('type',"USB");
-					$tmp2->assign('path',$data['path']." - ".Helper::getUsbDeviceName($data['path']));
+					$tmp2->assign('path',$data['path']." - ".Server::getUsbDeviceName($data['path']));
 				}
 				elseif(isset($status['type'])){
 					$tmp2->assign('type',$status['type']);
@@ -371,7 +371,7 @@ if(isset($_SESSION['user'])){
 					$obj['buttons'] = $buttons;
 					$obj['name'] = $ds['name'];
 					if($ds['type'] == "usb"){
-						$obj['path'] = Helper::getUsbDeviceName($ds['path']);
+						$obj['path'] = Server::getUsbDeviceName($ds['path']);
 						$obj['type'] = $ds['type']." - ".$ds['path'];
 					}
 					else{

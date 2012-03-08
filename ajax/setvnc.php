@@ -9,8 +9,8 @@ if(isset($_SESSION['user'])){
 	$password = $_GET['pass'];
 	
 	$vm = new QemuVm($vmID);
-	if(Helper::hasRessources($vm->ram)){
-		if(Helper::isOwner($_GET['vmID'])){
+	if(Server::hasRessources($vm->ram)){
+		if($vm->isOwner()){
 			if($vm->status == QemuMonitor::RUNNING){
 				$vm->connect();
 				$vm->setVncPassword($password);

@@ -6,8 +6,8 @@ Helper::loadClasses();
 
 if(isset($_SESSION['user'])){
 	$vmID = $_GET['vmID'];
-	if(Helper::isOwner($_GET['vmID'])){
-		$vm = new QemuVm($_GET['vmID']);
+	$vm = new QemuVm($_GET['vmID']);
+	if($vm->isOwner()){
 		if($vm->status == QemuMonitor::RUNNING){
 			header("Cache-Control: public");
 			header("Content-Description: File Transfer");

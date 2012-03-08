@@ -9,6 +9,7 @@ class QemuVm {
 	public $images;
 	public $vmID;
 	public $vnc_port;
+	public $owner;
 	public function __construct($id){
 		$this->monitor = null;
 		$this->devices = array();
@@ -28,6 +29,7 @@ class QemuVm {
 			$this->status = $data['status'];
 			$this->name = $data['name'];
 			$this->password = $data['password'];
+			$this->owner = $data['owner'];
 			
 			$query2 = $GLOBALS['pdo']->prepare("SELECT *,i.path,i.type FROM vm_images v JOIN images i ON i.imageID=v.imageID WHERE v.vmID = :vmID");
 			$query2->bindValue(':vmID', $this->vmID, PDO::PARAM_INT);
@@ -222,5 +224,24 @@ class QemuVm {
 			exec($cmd);
 		}
 		echo $cmd;
+	}
+	
+	/**
+	 * Checks if current User is owner 
+	 * or current User is admin
+	 */
+	public function isOwner(){
+		if(isset($_SESSION['user'])){
+			if($this->owner == $_SESSION['user']->id){
+				return true;
+			}
+			elseif($_SESSION['user']->role['vm_create'] == 1){
+				return true;
+			}
+			else{
+				return false;
+			}
+		}
+		return false;
 	}
 }

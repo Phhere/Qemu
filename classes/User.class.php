@@ -26,6 +26,19 @@ class User {
 		}	
 	}
 	
+	/**
+	 * Gibt den Namen zu einer UserID zurück
+	 * @param int $userID
+	 */
+	static function getUserName($userID){
+		$query = $GLOBALS['pdo']->prepare("SELECT email FROM users WHERE userID= :userID");
+		$query->bindValue(':userID', $userID, PDO::PARAM_INT);
+		$query->execute();
+	
+		$data = $query->fetch();
+		return $data['email'];
+	}
+	
 	/*
 	
 	static function createSSHUser($matrikel,$password){

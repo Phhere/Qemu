@@ -8,7 +8,7 @@ if(isset($_SESSION['user'])){
 	$vmID = (int) $_GET['vmID'];
 
 	$vm = new QemuVm($vmID);
-	if(Helper::isOwner($_GET['vmID'])){
+	if($vm->isOwner()){
 		if($vm->status == QemuMonitor::RUNNING){
 			$vm->connect();
 			$path = $GLOBALS['config']['screenshot_dir'].'/vm_'.$vm->vmID.'_'.date("Y_m_d_h_i_s");

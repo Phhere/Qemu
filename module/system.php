@@ -17,7 +17,7 @@ if(isset($_SESSION['user'])){
 		$tmp->assign('vms_on',$data['vms_on']);
 		$tmp->assign('images',$images);
 		
-		$ram = Helper::getRamSettings();
+		$ram = Server::getRamSettings();
 		if($ram){
 			$ram_usage = FileSystem::formatFileSize($ram['used']).' / '.FileSystem::formatFileSize($ram['all']);
 		}
@@ -27,7 +27,7 @@ if(isset($_SESSION['user'])){
 
 		$tmp->assign('ram_usage',$ram_usage);
 		
-		$cpu = Helper::getCPUusage();
+		$cpu = Server::getCPUusage();
 		if($cpu){
 			$cpu_usage = implode(" ",array_values($cpu));
 		}
@@ -43,7 +43,7 @@ if(isset($_SESSION['user'])){
 		$tmp->assign('free',FileSystem::formatFileSize($free));
 		$tmp->assign('all',FileSystem::formatFileSize($all));
 		
-		$qemu_ram = Helper::getQemuRamTemp();
+		$qemu_ram = Server::getQemuRamTemp();
 		if($qemu_ram !== false){
 			$tmp->assign('ram_qemu',FileSystem::formatFileSize($qemu_ram));
 		}
