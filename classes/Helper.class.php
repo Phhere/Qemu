@@ -50,14 +50,18 @@ class Helper {
 		
 	static function toBytes($val) {
 		$val = trim($val);
-		$last = strtolower($val[strlen($val)-1]);
+		$last = preg_replace("/[^a-z]/","",strtolower($val));
+		//$last = strtolower($val[strlen($val)-1]);
 		switch($last) {
 			// The 'G' modifier is available since PHP 5.1.0
 			case 'g':
+			case 'gb';
 				$val *= 1024;
 			case 'm':
+			case 'mb':
 				$val *= 1024;
 			case 'k':
+			case 'kb':
 				$val *= 1024;
 		}
 	

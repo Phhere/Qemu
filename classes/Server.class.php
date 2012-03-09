@@ -46,17 +46,15 @@ class Server {
 			return false;
 		}
 		else{
-			$out = exec("free",$lines);
-			foreach($lines as $index => $line){
-				$parts = array_values(array_filter(array_map("trim", explode(" ",$line))));
-				if($index == 1){
-					$all = $parts[1]*1024;
-				}
-				if($index == 2){
-					$used = $parts[2]*1024;
-					$free = $parts[3]*1024;
-				}
+			$data = array();
+			foreach(file('/proc/meminfo') as $line){
+				$parts = array_filter(array_map("trim", explode(":",$line,2)));
+				$data[$parts[0]] = Helper::toBytes($parts[1]);
 			}
+			$all = $data['MemTotal'];
+			$free = $data['MemFree'];# + $data['Buffers'] + $data['Cached'];
+			$used = $all-$free;
+			
 			return array('all'=>$all,'free'=>$free,'used'=>$used);
 		}
 	}
@@ -69,9 +67,7 @@ class Server {
 			return false;
 		}
 		else{
-			$out = exec("cat /proc/loadavg");
-			$values = array_map("trim", explode(" ",$out));
-			return array('last1'=>$values[0],'last5'=>$values[1],'last15'=>$values[2]);
+			return sys_getloadavg();
 		}
 	}
 	
