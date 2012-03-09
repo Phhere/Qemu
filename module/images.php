@@ -139,13 +139,13 @@ if(isset($_SESSION['user'])){
 							$query->bindValue(":path",$newname,PDO::PARAM_STR);
 							$query->execute();
 								
-							$tmp->assign('message','<div class="notice successful">Datei erfolgreich geklont</div>');
+							$tmp->assign('message','<div class="notice success">Datei erfolgreich geklont</div>');
 						}
 						else{
 							$query = $GLOBALS['pdo']->prepare("DELETE FROM images WHERE imageID=:imageID");
 							$query->bindValue(":imageID",$id,PDO::PARAM_INT);
 							$query->execute();
-							$tmp->assign('message','<div class="notice successful">Datei konnte nicht kopiert werden</div>');
+							$tmp->assign('message','<div class="notice success">Datei konnte nicht kopiert werden</div>');
 						}
 					}
 					else{

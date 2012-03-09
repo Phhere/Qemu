@@ -38,16 +38,4 @@ class User {
 		$data = $query->fetch();
 		return $data['email'];
 	}
-	
-	/*
-	
-	static function createSSHUser($matrikel,$password){
-		exec("bash scripts/addVncUser ".$matrikel." ".crypt($password));
-	}
-	
-	static function pushSShKey($matrikel,$key){
-		
-		$permit = 'permitopen="127.0.0.1:5901",permitopen="127.0.0.1:5902"';		
-		exec("bash scripts/addVncUserKey ".$matrikel." '".$key."' '".$permit."'");
-	}*/
 }

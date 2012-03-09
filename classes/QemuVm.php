@@ -44,6 +44,9 @@ class QemuVm {
 		}
 	}
 
+	/**
+	 * Build the command and start the vm
+	 */
 	public function startVM(){
 		$cmd = $GLOBALS['config']['qemu_executable'];
 		if(!empty($GLOBALS['config']['qemu_bios_folder'])){
@@ -80,7 +83,11 @@ class QemuVm {
 			$this->setVncPassword($this->password);
 		}
 	}
-
+	
+	/**
+	 * Set the status of the VM
+	 * @param int $status
+	 */
 	public function setStatus($status){
 		$this->status = $status;
 		$query = $GLOBALS['pdo']->prepare("UPDATE vm SET status=:status WHERE vmID= :vmID");

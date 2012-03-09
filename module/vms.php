@@ -130,9 +130,9 @@ if(isset($_SESSION['user'])){
 		if($_SESSION['user']->role['vm_create'] == 1){
 
 			$owner = '<option value="0">--</option>';
-			$query = $GLOBALS['pdo']->query("SELECT userID, email FROM users");
+			$query = $GLOBALS['pdo']->query("SELECT userID, username FROM users");
 			while($ds = $query->fetch()){
-				$owner .= '<option value="'.$ds['userID'].'">'.$ds['email'].'</option>';
+				$owner .= '<option value="'.$ds['userID'].'">'.$ds['username'].'</option>';
 			}
 
 			$image = '<option value="0">--</option>';
@@ -161,10 +161,10 @@ if(isset($_SESSION['user'])){
 			if($data['status'] == QemuMonitor::SHUTDOWN){
 				$owner = '';
 				
-				$query2 = $GLOBALS['pdo']->query("SELECT userID, email FROM users");
+				$query2 = $GLOBALS['pdo']->query("SELECT userID, username FROM users");
 				
 				while($ds = $query2->fetch()){
-					$owner .= '<option value="'.$ds['userID'].'">'.$ds['email'].'</option>';
+					$owner .= '<option value="'.$ds['userID'].'">'.$ds['username'].'</option>';
 				}
 
 				$owner = str_replace('value="'.$data['owner'].'"','value="'.$data['owner'].'" selected="selected"',$owner);
