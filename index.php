@@ -17,25 +17,13 @@ raintpl::configure( 'cache_dir','./cache/templates/');
 
 include './module/'.$GLOBALS['site'].'.php';
 
+$content = Routing::getInstance()->render();
+$GLOBALS['template']->assign('content',$content);
+
 include './boxes/login.php';
 include './boxes/status.php';
 include './boxes/navigation.php';
-
-$GLOBALS['template']->assign('ping','');
-if(isset($_SESSION['user'])){
-	
-	$query = $GLOBALS['pdo']->prepare("SELECT count(*) AS `running` FROM vm WHERE owner = :owner AND status = :status  AND persistent = :persistent");
-	$query->bindValue(":owner",$_SESSION['user']->id,PDO::PARAM_INT);
-	$query->bindValue(":status",QemuMonitor::RUNNING,PDO::PARAM_INT);
-	$query->bindValue(":persistent",0,PDO::PARAM_INT);
-	$query->execute();
-	
-	$data = $query->fetch();
-	
-	if($data['running']>0){
-		$GLOBALS['template']->assign('ping','<script type="text/javascript">window.ping=true;</script>');
-	}
-}
+include './boxes/ping.php';
 
 $GLOBALS['template']->assign('box_news',file_get_contents('boxes/news.php'));
 $GLOBALS['template']->draw( "index" );

@@ -8,6 +8,7 @@ class Helper {
 	static $cacheDir = '/cache';
 	
 	static function loadClasses(){
+		require_once $GLOBALS['rootDir']."/classes/singleton.class.php";
 		foreach(glob($GLOBALS['rootDir']."/classes/*.php") as $file){
 			require_once $file;
 		}
