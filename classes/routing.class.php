@@ -48,11 +48,6 @@ class Routing extends Singleton{
 					$module = $route[0];
 					$content .= call_user_func(array($route[0],"post_".$route[1]));
 				}
-				elseif(isset($_GET[$route[2]])){
-					$found = true;
-					$module = $route[0];
-					$content .= call_user_func(array($route[0],"get_".$route[1]));
-				}
 				elseif($route[1] == $action || ($route[1] == $this->default_action && $found == false && count($this->append_render) == 0)){
 					$found = true;
 					$module = $route[0];

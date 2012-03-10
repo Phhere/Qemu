@@ -10,6 +10,10 @@ class Images extends Modul{
 	 */
 	public function post_save_new(){
 
+		if(Modul::hasAccess('image_create') == false){
+			return '<div class="notice error">Sie haben keinen Zugriff</div>';
+		}
+		
 		$content = '';
 
 		$do = false;
@@ -67,6 +71,11 @@ class Images extends Modul{
 	* Handle $_POST['save_edit']
 	*/
 	public function post_save_edit(){
+		
+		if(Modul::hasAccess('image_edit') == false){
+			return '<div class="notice error">Sie haben keinen Zugriff</div>';
+		}
+		
 		$do = false;
 		$query = $GLOBALS['pdo']->prepare("UPDATE images SET name = :name, path = :path, type=:type, deleteable = :deleteable  WHERE imageID= :imageID");
 
@@ -140,6 +149,11 @@ class Images extends Modul{
 	* Handle $_GET['action'] = delete
 	*/
 	public function action_delete(){
+		
+		if(Modul::hasAccess('image_remove') == false){
+			return '<div class="notice error">Sie haben keinen Zugriff</div>';
+		}
+		
 		Routing::getInstance()->appendRender($this,"action_default");
 
 		$id = $_GET['image'];
@@ -170,6 +184,11 @@ class Images extends Modul{
 	* Handle $_GET['action'] = clone
 	*/
 	public function action_clone(){
+		
+		if(Modul::hasAccess('image_clone') == false){
+			return '<div class="notice error">Sie haben keinen Zugriff</div>';
+		}
+		
 		Routing::getInstance()->appendRender($this,"action_default");
 		$id = $_GET['image'];
 		$query = $GLOBALS['pdo']->prepare("SELECT * FROM images WHERE imageID= :imageID");
@@ -224,6 +243,11 @@ class Images extends Modul{
 	* Handle $_GET['action'] = new
 	*/
 	public function action_new(){
+		
+		if(Modul::hasAccess('image_create') == false){
+			return '<div class="notice error">Sie haben keinen Zugriff</div>';
+		}
+		
 		if(isset($_POST['name'])){
 			$name = $_POST['name'];
 		}
@@ -304,6 +328,11 @@ class Images extends Modul{
 	* Handle $_GET['action'] = edit
 	*/
 	public function action_edit(){
+		
+		if(Modul::hasAccess('image_edit') == false){
+			return '<div class="notice error">Sie haben keinen Zugriff</div>';
+		}
+		
 		$image = $_GET['image'];
 
 		$query = $GLOBALS['pdo']->prepare("SELECT * FROM images WHERE imageID= :imageID");
@@ -368,6 +397,11 @@ class Images extends Modul{
 	* Handle default requests on this modul
 	*/
 	public function action_default(){
+		
+		if(Modul::hasAccess('image_edit','image_create','image_clone','image_remove') == false){
+			return '<div class="notice error">Sie haben keinen Zugriff</div>';
+		}
+		
 		$tmp2 = new RainTPL();
 
 		$query = $GLOBALS['pdo']->prepare("SELECT i.*,v.status FROM images i LEFT JOIN vm_images t ON t.imageID = i.imageID LEFT JOIN vm v ON v.vmID = t.vmID");
@@ -414,12 +448,12 @@ class Images extends Modul{
 	}
 }
 $modul = new Images();
-Routing::getInstance()->addRouteByAction($modul,'images','clone');
-Routing::getInstance()->addRouteByAction($modul,'images','new');
-Routing::getInstance()->addRouteByAction($modul,'images','edit');
-Routing::getInstance()->addRouteByAction($modul,'images','status');
-Routing::getInstance()->addRouteByPostField($modul,'images','save_new','save_new');
-Routing::getInstance()->addRouteByPostField($modul,'images','save_edit','save_edit');
-
-Routing::getInstance()->addRouteByAction($modul,'images','default');
+$routing = Routing::getInstance();
+$routing->addRouteByAction($modul,'images','clone');
+$routing->addRouteByAction($modul,'images','new');
+$routing->addRouteByAction($modul,'images','edit');
+$routing->addRouteByAction($modul,'images','status');
+$routing->addRouteByPostField($modul,'images','save_new','save_new');
+$routing->addRouteByPostField($modul,'images','save_edit','save_edit');
+$routing->addRouteByAction($modul,'images','default');
 ?>

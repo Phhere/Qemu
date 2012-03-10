@@ -5,6 +5,9 @@ class Vms extends Modul {
 	}
 
 	public function post_save(){
+		if(Modul::hasAccess('vm_create') == false){
+			return '<div class="notice error">Sie haben keinen Zugriff</div>';
+		}
 		$query = $GLOBALS['pdo']->prepare("INSERT INTO vm (owner,name,ram,password,params,persistent) VALUES (:owner,:name,:ram,:password,:params,:persostemt)");
 		$query->bindValue(':owner',$_POST['owner'],PDO::PARAM_STR);
 		$query->bindValue(':name',$_POST['name'],PDO::PARAM_STR);
@@ -35,6 +38,9 @@ class Vms extends Modul {
 	}
 
 	public function post_save_edit(){
+		if(Modul::hasAccess('vm_edit') == false){
+			return '<div class="notice error">Sie haben keinen Zugriff</div>';
+		}
 		$id = (int)$_POST['vm'];
 
 		$query = $GLOBALS['pdo']->prepare("UPDATE vm SET owner= :owner, name= :name, ram= :ram, password= :password, params= :params, persistent = :persistent WHERE vmID= :vmID");
@@ -117,6 +123,9 @@ class Vms extends Modul {
 	}
 
 	public function action_new(){
+		if(Modul::hasAccess('vm_create') == false){
+			return '<div class="notice error">Sie haben keinen Zugriff</div>';
+		}
 		$owner = '<option value="0">--</option>';
 		$query = $GLOBALS['pdo']->query("SELECT userID, username FROM users");
 		while($ds = $query->fetch()){
@@ -137,6 +146,9 @@ class Vms extends Modul {
 	}
 
 	public function action_edit(){
+		if(Modul::hasAccess('vm_edit') == false){
+			return '<div class="notice error">Sie haben keinen Zugriff</div>';
+		}
 		$id = $_GET['vmID'];
 
 		$query = $GLOBALS['pdo']->prepare("SELECT * FROM vm WHERE vmID= :vmID");
@@ -204,6 +216,9 @@ class Vms extends Modul {
 	}
 
 	public function action_default(){
+		if(Modul::hasAccess('vm_edit','vm_create','vm_remove') == false){
+			return '<div class="notice error">Sie haben keinen Zugriff</div>';
+		}
 		$tmp2 = new RainTPL();
 
 		$query = $GLOBALS['pdo']->query("SELECT * FROM vm");
@@ -257,9 +272,9 @@ class Vms extends Modul {
 
 }
 $modul = new Vms();
-Routing::getInstance()->addRouteByAction($modul,'vms','new');
-Routing::getInstance()->addRouteByAction($modul,'vms','edit');
-Routing::getInstance()->addRouteByPostField($modul,'vms','save','save');
-Routing::getInstance()->addRouteByPostField($modul,'vms','save_edit','save_edit');
-
-Routing::getInstance()->addRouteByAction($modul,'vms','default');
+$routing = Routing::getInstance();
+$routing->addRouteByAction($modul,'vms','new');
+$routing->addRouteByAction($modul,'vms','edit');
+$routing->addRouteByPostField($modul,'vms','save','save');
+$routing->addRouteByPostField($modul,'vms','save_edit','save_edit');
+$routing->addRouteByAction($modul,'vms','default');

@@ -4,6 +4,11 @@ class Users extends Modul {
 		return "<h1>Users</h1>";
 	}
 	public function post_save_new(){
+		
+		if(Modul::hasAccess('user_create') == false){
+			return '<div class="notice error">Sie haben keinen Zugriff</div>';
+		}
+		
 		/**
 		* @todo Mail versenden
 		*/
@@ -18,6 +23,9 @@ class Users extends Modul {
 		return "<div class='notice success'>Benutzer wurde gespeichert</div>";
 	}
 	public function post_save_edit(){
+		if(Modul::hasAccess('user_edit') == false){
+			return '<div class="notice error">Sie haben keinen Zugriff</div>';
+		}
 		$query = $GLOBALS['pdo']->prepare("UPDATE users SET role = :role, username = :username, email=:email WHERE userID= :userID");
 		$query->bindValue(':role',$_POST['role'],PDO::PARAM_INT);
 		$query->bindValue(':username',$_POST['username'],PDO::PARAM_STR);
@@ -29,6 +37,9 @@ class Users extends Modul {
 	}
 	
 	public function action_delete(){
+		if(Modul::hasAccess('user_delete') == false){
+			return '<div class="notice error">Sie haben keinen Zugriff</div>';
+		}
 		Routing::getInstance()->appendRender($this,"action_default");
 		$query = $GLOBALS['pdo']->prepare("DELETE FROM users WHERE userID= :userID");
 		$query->bindValue(':userID',$_GET['user'],PDO::PARAM_INT);
@@ -38,6 +49,9 @@ class Users extends Modul {
 	}
 	
 	public function action_new(){
+		if(Modul::hasAccess('user_create') == false){
+			return '<div class="notice error">Sie haben keinen Zugriff</div>';
+		}
 		$roles = '';
 		$query = $GLOBALS['pdo']->prepare("SELECT * FROM roles");
 		$query->execute();
@@ -55,6 +69,9 @@ class Users extends Modul {
 	}
 	
 	public function action_edit(){
+		if(Modul::hasAccess('user_edit') == false){
+			return '<div class="notice error">Sie haben keinen Zugriff</div>';
+		}
 		$user = $_GET['user'];
 		
 		$query = $GLOBALS['pdo']->prepare("SELECT * FROM users WHERE userID = :user");
@@ -86,6 +103,9 @@ class Users extends Modul {
 	}
 	
 	public function action_default(){
+		if(Modul::hasAccess('user_edit','user_create','user_delete') == false){
+			return '<div class="notice error">Sie haben keinen Zugriff</div>';
+		}
 		$tmp2 = new RainTPL();
 		$query = $GLOBALS['pdo']->prepare("SELECT * FROM users");
 		$query->execute();
@@ -139,9 +159,10 @@ class Users extends Modul {
 	}
 }
 $modul = new Users();
-Routing::getInstance()->addRouteByAction($modul,'users','new');
-Routing::getInstance()->addRouteByAction($modul,'users','edit');
-Routing::getInstance()->addRouteByPostField($modul,'images','save_new','save_new');
-Routing::getInstance()->addRouteByPostField($modul,'images','save_edit','save_edit');
-Routing::getInstance()->addRouteByAction($modul,'users','default');
+$routing = Routing::getInstance();
+$routing->addRouteByAction($modul,'users','new');
+$routing->addRouteByAction($modul,'users','edit');
+$routing->addRouteByPostField($modul,'images','save_new','save_new');
+$routing->addRouteByPostField($modul,'images','save_edit','save_edit');
+$routing->addRouteByAction($modul,'users','default');
 ?>

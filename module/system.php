@@ -4,6 +4,9 @@ class System extends Modul {
 		return "<h1>Systemverwaltung</h1>";
 	}
 	public function post_save(){
+		if(Modul::hasAccess('system') == false){
+			return '<div class="notice error">Sie haben keinen Zugriff</div>';
+		}
 		Routing::getInstance()->appendRender($this,"action_default");
 
 		$query = $GLOBALS['pdo']->prepare("UPDATE config SET `value`= :value WHERE `key`= :key");
@@ -20,6 +23,9 @@ class System extends Modul {
 	}
 
 	public function action_default(){
+		if(Modul::hasAccess('system') == false){
+			return '<div class="notice error">Sie haben keinen Zugriff</div>';
+		}
 		$query = $GLOBALS['pdo']->prepare("SELECT count(vmID) AS `vms`, SUM(IF(status=1,1,0)) AS `vms_on` FROM vm");
 		$query->execute();
 
@@ -90,7 +96,7 @@ class System extends Modul {
 	}
 }
 $modul = new System();
-Routing::getInstance()->addRouteByPostField($modul,'system','save','save');
-
-Routing::getInstance()->addRouteByAction($modul,'system','default');
+$routing = Routing::getInstance();
+$routing->addRouteByPostField($modul,'system','save','save');
+$routing->addRouteByAction($modul,'system','default');
 ?>

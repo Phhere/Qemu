@@ -5,6 +5,7 @@ class MyVM extends Modul{
 	}
 	
 	public function action_start(){
+		
 		Routing::getInstance()->appendRender($this,"action_default");
 		$vm = new QemuVm($_GET['vmID']);
 		if(Server::hasRessources($vm->ram)){
@@ -104,6 +105,7 @@ class MyVM extends Modul{
 	}
 }
 $modul = new MyVM();
-Routing::getInstance()->addRouteByAction($modul,'myvm','start');
-Routing::getInstance()->addRouteByAction($modul,'myvm','stop');
-Routing::getInstance()->addRouteByAction($modul,'myvm','default');
+$routing = Routing::getInstance();
+$routing->addRouteByAction($modul,'myvm','start');
+$routing->addRouteByAction($modul,'myvm','stop');
+$routing->addRouteByAction($modul,'myvm','default');
