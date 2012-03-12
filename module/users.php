@@ -36,6 +36,19 @@ class Users extends Modul {
 		return "<div class='notice success'>Änderungen gespeichert</div>";
 	}
 	
+	public function post_addvm(){
+		if(Modul::hasAccess('vm_create') == false){
+			return '<div class="notice error">Sie haben keinen Zugriff</div>';
+		}
+	
+		$query = $GLOBALS['pdo']->prepare("UPDATE vm SET owner = :userID WHERE vmID=:vm");
+		$query->bindValue(':userID',$_POST['user'],PDO::PARAM_INT);
+		$query->bindValue(':vm',$_POST['vm'],PDO::PARAM_INT);
+	
+		$query->execute();
+		return "<div class='notice success'>Änderungen gespeichert</div>";
+	}
+	
 	public function action_delete(){
 		if(Modul::hasAccess('user_delete') == false){
 			return '<div class="notice error">Sie haben keinen Zugriff</div>';
@@ -102,6 +115,42 @@ class Users extends Modul {
 		}
 	}
 	
+	public function action_addvm(){
+		if(Modul::hasAccess('user_edit','user_create') == false){
+			return '<div class="notice error">Sie haben keinen Zugriff</div>';
+		}
+		
+		$user = $_GET['user'];
+		
+		$query = $GLOBALS['pdo']->prepare("SELECT * FROM users WHERE userID = :user");
+		$query->bindValue(":user",$user,PDO::PARAM_INT);
+		$query->execute();
+		
+		if($query->rowCount()>0){
+			$data = $query->fetch();
+			
+			$get = $GLOBALS['pdo']->prepare("SELECT * FROM vm WHERE owner = 0");
+			$get->execute();
+			$vms = '';
+			while($ds = $get->fetch()){
+				$vms .= '<option value="'.$ds['vmID'].'">'.$ds['name'].' - '.$ds['vmID'].'</option>';
+			}
+			if(empty($vms)){
+				$vms = '<option value="-1" disabled="disabled" selected="selected">keine freie VM vorhanden</option>';
+			}
+			
+			$tmp2 = new RainTPL();
+			$tmp2->assign('username',$data['username']);
+			$tmp2->assign('userID',$data['userID']);
+			$tmp2->assign('vms',$vms);
+			
+			return $tmp2->draw('user_addvm',true);
+		}
+		else{
+			return '<div class="notice warning">Es existiert kein Nutzer mit dieser ID</div>';
+		}
+	}
+	
 	public function action_default(){
 		if(Modul::hasAccess('user_edit','user_create','user_delete') == false){
 			return '<div class="notice error">Sie haben keinen Zugriff</div>';
@@ -162,7 +211,9 @@ $modul = new Users();
 $routing = Routing::getInstance();
 $routing->addRouteByAction($modul,'users','new');
 $routing->addRouteByAction($modul,'users','edit');
-$routing->addRouteByPostField($modul,'images','save_new','save_new');
-$routing->addRouteByPostField($modul,'images','save_edit','save_edit');
+$routing->addRouteByAction($modul,'users','addVM');
+$routing->addRouteByPostField($modul,'users','save_new','save_new');
+$routing->addRouteByPostField($modul,'users','save_edit','save_edit');
+$routing->addRouteByPostField($modul,'users','addvm','addvm');
 $routing->addRouteByAction($modul,'users','default');
 ?>

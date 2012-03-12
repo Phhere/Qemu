@@ -230,7 +230,6 @@ class QemuVm {
 			$cmd = $cmd." > ".$GLOBALS['config']['log_path'].'/vm_'.$this->vmID."_".date("Y_m_d").".log &";
 			exec($cmd);
 		}
-		echo $cmd;
 	}
 	
 	/**

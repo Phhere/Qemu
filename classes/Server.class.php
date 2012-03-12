@@ -1,5 +1,10 @@
 <?php
 class Server {
+	
+	const RAM_LIMIT = 0;
+	const USER_LIMIT = -1;
+	const RUN = 1;
+	
 	/**
 	 * Check ob noch Ram frei ist und noch nicht zu viele VMs laufen
 	 * @param int $ram_needed Benötigter Ram
@@ -12,7 +17,7 @@ class Server {
 
 		$data = $query->fetch();
 
-		$run = true;
+		$run = self::RUN;
 
 		if($data['running'] > $GLOBALS['config']['max_running_vms']){
 			$run = self::RAM_LIMIT;

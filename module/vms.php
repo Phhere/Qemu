@@ -8,7 +8,7 @@ class Vms extends Modul {
 		if(Modul::hasAccess('vm_create') == false){
 			return '<div class="notice error">Sie haben keinen Zugriff</div>';
 		}
-		$query = $GLOBALS['pdo']->prepare("INSERT INTO vm (owner,name,ram,password,params,persistent) VALUES (:owner,:name,:ram,:password,:params,:persostemt)");
+		$query = $GLOBALS['pdo']->prepare("INSERT INTO vm (owner,name,ram,password,params,persistent) VALUES (:owner,:name,:ram,:password,:params,:persistent)");
 		$query->bindValue(':owner',$_POST['owner'],PDO::PARAM_STR);
 		$query->bindValue(':name',$_POST['name'],PDO::PARAM_STR);
 		$query->bindValue(':ram',$_POST['ram'],PDO::PARAM_STR);
@@ -59,7 +59,7 @@ class Vms extends Modul {
 
 		$query = $GLOBALS['pdo']->prepare("INSERT INTO vm_images (vmID,imageID) VALUES (:vmID,:imageID)");
 		$query->bindValue(':vmID',$id,PDO::PARAM_INT);
-		$query->bindParam(':vmID',$image,PDO::PARAM_INT);
+		$query->bindParam(':imageID',$image,PDO::PARAM_INT);
 
 		foreach($_POST['image'] as $image){
 			if($image != "0"){
@@ -78,8 +78,8 @@ class Vms extends Modul {
 					return "<div class='notice'>Die VM scheint bereits aus zu laufen.</div>";
 				}
 				else{
-					$vm->startVM();
 					try{
+						$vm->startVM();
 						$vm->connect();
 					}
 					catch(Exception $e){
@@ -275,6 +275,8 @@ $modul = new Vms();
 $routing = Routing::getInstance();
 $routing->addRouteByAction($modul,'vms','new');
 $routing->addRouteByAction($modul,'vms','edit');
+$routing->addRouteByAction($modul,'vms','start');
+$routing->addRouteByAction($modul,'vms','stop');
 $routing->addRouteByPostField($modul,'vms','save','save');
 $routing->addRouteByPostField($modul,'vms','save_edit','save_edit');
 $routing->addRouteByAction($modul,'vms','default');

@@ -8,7 +8,8 @@ class MyVM extends Modul{
 		
 		Routing::getInstance()->appendRender($this,"action_default");
 		$vm = new QemuVm($_GET['vmID']);
-		if(Server::hasRessources($vm->ram)){
+		$status = Server::hasRessources($vm->ram);
+		if($status == Server::RUN){
 			if($vm->isOwner()){
 				if($vm->status == QemuMonitor::RUNNING){
 					return "<div class='notice'>Die VM scheint bereits aus zu laufen.</div>";
@@ -27,6 +28,9 @@ class MyVM extends Modul{
 					}
 				}
 			}
+		}
+		elseif($status == Server::USER_LIMIT){
+			return "<div class='notice error'>Sie können maximal ".$GLOBALS['config']['running_vms']." VMs gleichzeitig laufen lassen</div>";
 		}
 		else{
 			return "<div class='notice error'>Es sind keine Ressourcen mehr verfügbar um die VM zu starten</div>";

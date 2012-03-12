@@ -1,9 +1,5 @@
 <?php
 class Helper {
-
-	const RAM_LIMIT = 0;
-	const USER_LIMIT = -1;
-	const RUN = 1;
 	
 	static $cacheDir = '/cache';
 	
