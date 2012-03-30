@@ -17,12 +17,10 @@ while($ds = $query->fetch()){
 			$vm->connect();
 		}
 		catch(Exception $e){
-			//$tmp->assign('message',"<div class='notice warning'>Die VM scheint bereits aus zu sein.</div>");
 			$vm->setStatus(QemuMonitor::SHUTDOWN);
 		}
 		if(!isset($e)){
 			$vm->shutdown();
-			//$tmp->assign('message',"<div class='notice success'>Die VM wird ausgeschaltet.</div>");
 		}
 	}
 }
