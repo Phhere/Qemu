@@ -42,4 +42,12 @@ class Image {
 		}
 		return $return;
 	}
+	
+	static function isUsed($imageID){
+		$query = $GLOBALS['pdo']->prepare("SELECT v.status FROM vm_images i JOIN vm v ON v.vmID = i.vmID WHERE i.imageID= :imageID AND v.status = 1");
+		$query->bindValue(':imageID', $imageID, PDO::PARAM_INT);
+		$query->execute();
+		
+		return !($query->rowCount() == 0);
+	}
 }

@@ -18,11 +18,12 @@ class Images extends Modul{
 
 		$do = false;
 		
-		$query = $GLOBALS['pdo']->prepare("INSERT INTO images (name,path,type,deleteable) VALUES (:name, :path, :type, :deleteable)");
+		$query = $GLOBALS['pdo']->prepare("INSERT INTO images (name,path,type,shared,owner) VALUES (:name, :path, :type, :shared,:owner)");
 		$query->bindValue(":name",$_POST['name'],PDO::PARAM_STR);
 		$query->bindParam(":type",$type,PDO::PARAM_STR);
 		$query->bindParam(":path",$path,PDO::PARAM_STR);
-		$query->bindValue(":deleteable",!isset($_POST['deleteable']),PDO::PARAM_INT);
+		$query->bindValue(":owner",$_SESSION['user']->id,PDO::PARAM_STR);
+		$query->bindValue(":shared",isset($_POST['shared']),PDO::PARAM_INT);
 
 		$type = $_POST['type'];
 
@@ -77,11 +78,11 @@ class Images extends Modul{
 		}
 		
 		$do = false;
-		$query = $GLOBALS['pdo']->prepare("UPDATE images SET name = :name, path = :path, type=:type, deleteable = :deleteable  WHERE imageID= :imageID");
+		$query = $GLOBALS['pdo']->prepare("UPDATE images SET name = :name, path = :path, type=:type, shared = :shared  WHERE imageID= :imageID");
 
 		$query->bindValue(':name',$_POST['name'],PDO::PARAM_STR);
 		$query->bindValue(':type',$_POST['type'],PDO::PARAM_STR);
-		$query->bindValue(':deleteable',!isset($_POST['deleteable']),PDO::PARAM_INT);
+		$query->bindValue(':shared',isset($_POST['shared']),PDO::PARAM_INT);
 		$query->bindValue(':imageID',$_POST['image'],PDO::PARAM_INT);
 		$query->bindParam(':path',$path,PDO::PARAM_STR);
 
@@ -199,10 +200,10 @@ class Images extends Modul{
 		if($data['type'] != "usb"){
 			if(is_dir($data['path']) == false){
 
-				$query = $GLOBALS['pdo']->prepare("INSERT INTO images (name,type,deleteable) VALUES (:name, :type, :deleteable)");
+				$query = $GLOBALS['pdo']->prepare("INSERT INTO images (name,type,shared) VALUES (:name, :type, :shared)");
 				$query->bindValue(":name",$data['name'],PDO::PARAM_STR);
 				$query->bindValue(":type",$data['type'],PDO::PARAM_STR);
-				$query->bindValue(":deleteable",$data['deleteable'],PDO::PARAM_INT);
+				$query->bindValue(":shared",$data['shared'],PDO::PARAM_INT);
 				$do = $query->execute();
 
 				if($do){
@@ -290,11 +291,11 @@ class Images extends Modul{
 			$create_size = "10G";
 		}
 
-		if(isset($_POST['deleteable'])){
-			$delete = ' checked="checked"';
+		if(isset($_POST['shared'])){
+			$shared = ' checked="checked"';
 		}
 		else{
-			$delete = '';
+			$shared = '';
 		}
 
 		$usb = '';
@@ -319,7 +320,7 @@ class Images extends Modul{
 		$tmp2->assign('path_create',$path_create);
 		$tmp2->assign('create_type',$create_type);
 		$tmp2->assign('create_size',$create_size);
-		$tmp2->assign('delete',$delete);
+		$tmp2->assign('shared',$shared);
 		$tmp2->assign('usb_device',$usb);
 		return $tmp2->draw('image_new',true);
 	}
@@ -344,11 +345,11 @@ class Images extends Modul{
 
 			$types = str_replace('value="'.$data['type'].'"', 'value="'.$data['type'].'" selected="selected"', $GLOBALS['device_types']);
 
-			if(!$data['deleteable']){
-				$delete = ' checked="checked"';
+			if(!$data['shared']){
+				$shared = ' checked="checked"';
 			}
 			else{
-				$delete = '';
+				$shared = '';
 			}
 
 			$usb = '';
@@ -385,7 +386,7 @@ class Images extends Modul{
 			$tmp2->assign('class_usb',$style_usb);
 			$tmp2->assign('class_path',$style_path);
 			$tmp2->assign('imageID',$data['imageID']);
-			$tmp2->assign('delete',$delete);
+			$tmp2->assign('shared',$shared);
 			return $tmp2->draw('image_edit',true);
 		}
 		else{
@@ -414,7 +415,7 @@ class Images extends Modul{
 				if($_SESSION['user']->role['image_edit'] == 1){
 					$buttons .= '<a href="index.php?site=images&action=edit&image='.$ds['imageID'].'" class="button small center grey"><span class="icon" data-icon="G"></span>Edit</a>';
 				}
-				if($ds['deleteable'] && $ds['status'] == QemuMonitor::SHUTDOWN){
+				if(Image::isUsed($ds['imageID']) == false && ($ds['owner'] == $_SESSION['user']->id || Modul::hasAccess('image_remove'))){
 					$buttons .= '<a href="index.php?site=images&action=delete&image='.$ds['imageID'].'" class="button small center grey"><span class="icon" data-icon="T"></span>delete</a>';
 				}
 				if($ds['status'] == QemuMonitor::SHUTDOWN && $ds['type'] != 'usb'){
