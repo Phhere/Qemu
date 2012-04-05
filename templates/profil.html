@@ -1,0 +1,28 @@
+<form action="index.php?site=profil" method="post">
+	<table class="striped">
+		<thead>
+			<tr>
+				<th colspan="2">edit Profil</th>
+			</tr>
+		</thead>
+		<tr>
+			<th>Username:</th>
+			<td>{$username}</td>
+		</tr>
+		<tr>
+			<th>Name:</th>
+			<td><input type="text" class="col_12" name="name"
+				value="{$name}" /></td>
+		</tr>
+		<tr>
+			<th>Email:</th>
+			<td><input type="text" class="col_12" name="email"
+				value="{$email}" /></td>
+		</tr>
+		<tr>
+			<th>Password:</th>
+			<td><a href="index.php?site=profil&action=edit_password">edit</a></td>
+		</tr>
+	</table>
+	<input type="submit" class="center" name="save" value="Speichern" />
+</form>
