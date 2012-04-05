@@ -3,9 +3,10 @@ include './config.php';
 include './classes/Helper.class.php';
 
 $GLOBALS['site'] = "start";
-if(isset($_GET['site'])){
-	if(file_exists('./module/'.basename($_GET['site']).'.php')){
-		$GLOBALS['site'] = basename($_GET['site']);
+if(isset($_GET['site']) && is_string($_GET['site'])){
+	$name = basename(preg_replace('/[^(\x20-\x7F)]*/', '',$_GET['site']));
+	if(file_exists('./module/'.$name.'.php')){
+		$GLOBALS['site'] = $name;
 	}
 }
 

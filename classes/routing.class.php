@@ -31,8 +31,8 @@ class Routing extends Singleton{
 			$action = null;
 		}
 
-		if(isset($_GET['site'])){
-			$site = $_GET['site'];
+		if(isset($GLOBALS['site']) ){
+			$site = $GLOBALS['site'];
 		}
 		else{
 			$site = $this->default_page;
