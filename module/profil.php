@@ -17,7 +17,7 @@ class Profil extends Modul {
 		if($data['password'] == md5($_POST['old_pass'])){
 			if(md5($_POST['new_pass']) == md5($_POST['new_pass_2']) && !empty($_POST['new_pass_2'])){
 				$query = $GLOBALS['pdo']->prepare("UPDATE users SET password=:password WHERE userID = :id");
-				$query->bindValue(':password',$_POST['password'],PDO::PARAM_STR);
+				$query->bindValue(':password',md5($_POST['new_pass']),PDO::PARAM_STR);
 				$query->bindValue(':id',$_SESSION['user']->id,PDO::PARAM_INT);
 				$query->execute();
 				Routing::getInstance()->appendRender($this,"action_default");
