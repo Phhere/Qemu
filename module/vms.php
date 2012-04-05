@@ -96,7 +96,7 @@ class Vms extends Modul {
 			return "<div class='notice error'>Es sind keine Ressourcen mehr verfügbar um die VM zu starten</div>";
 		}
 	}
-
+	
 	public function action_stop(){
 		$vm = new QemuVm($_GET['vmID']);
 		if($vm->isOwner()){
@@ -141,7 +141,9 @@ class Vms extends Modul {
 		$tmp2 = new RainTPL();
 		$tmp2->assign('owner',$owner);
 		$tmp2->assign('image',$image);
+		$tmp2->assign('parameters',$GLOBALS['config']['qemu_parameters']);
 		$tmp2->assign('ram',$GLOBALS['config']['default_ram']);
+		
 		return $tmp2->draw('vms_new',true);
 	}
 
@@ -277,6 +279,7 @@ $routing->addRouteByAction($modul,'vms','new');
 $routing->addRouteByAction($modul,'vms','edit');
 $routing->addRouteByAction($modul,'vms','start');
 $routing->addRouteByAction($modul,'vms','stop');
+$routing->addRouteByAction($modul,'vms','assistent');
 $routing->addRouteByPostField($modul,'vms','save','save');
 $routing->addRouteByPostField($modul,'vms','save_edit','save_edit');
 $routing->addRouteByAction($modul,'vms','default');

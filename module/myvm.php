@@ -15,8 +15,8 @@ class MyVM extends Modul{
 					return "<div class='notice'>Die VM scheint bereits aus zu laufen.</div>";
 				}
 				else{
-					$vm->startVM();
 					try{
+						$vm->startVM();
 						$vm->connect();
 					}
 					catch(Exception $e){

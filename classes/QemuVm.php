@@ -79,6 +79,7 @@ class QemuVm {
 		$query->execute();
 		
 		if($this->password != ""){
+			usleep(100000);
 			$this->connect();
 			$this->setVncPassword($this->password);
 		}
