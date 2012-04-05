@@ -75,5 +75,5 @@ class Profil extends Modul {
 $modul = new Profil();
 $routing = Routing::getInstance();
 $routing->addRouteByAction($modul,'profil','edit_password');
-$routing->addRouteByPostField($modul,'profil','save','save');
+$routing->addRouteByPostField($modul,'profil','save_pass','save_pass');
 $routing->addRouteByAction($modul,'profil','default');
