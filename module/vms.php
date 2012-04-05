@@ -147,6 +147,21 @@ class Vms extends Modul {
 		return $tmp2->draw('vms_new',true);
 	}
 
+	public function action_delete(){
+		if(Modul::hasAccess('vm_edit') == false){
+			return '<div class="notice error">Sie haben keinen Zugriff</div>';
+		}
+		$id = $_GET['vmID'];
+		
+		$query = $GLOBALS['pdo']->prepare("DELETE FROM vm WHERE vmID= :vmID");
+		$query->bindValue(':vmID', $id, PDO::PARAM_INT);
+		$query->execute();
+		
+		Routing::getInstance()->appendRender($this,"action_default");
+		
+		return "<div class='notice success'>VM gelöscht.</div><div class='notice'>Images existieren noch</div>";
+	}
+	
 	public function action_edit(){
 		if(Modul::hasAccess('vm_edit') == false){
 			return '<div class="notice error">Sie haben keinen Zugriff</div>';
@@ -248,6 +263,7 @@ class Vms extends Modul {
 					$buttons = '<a href="index.php?site=vms&action=start&vmID='.$ds['vmID'].'" class="button green small center"><span class="icon" data-icon="&nbsp;"></span>Start</a>';
 					$buttons .='<a href="index.php?site=vms&action=edit&vmID='.$ds['vmID'].'" class="button small center grey"><span class="icon" data-icon="G"></span>Edit</a>';
 					$buttons .='<a href="index.php?site=vms&action=clone&vmID='.$ds['vmID'].'" class="button small center grey"><span class="icon" data-icon="R"></span>Clone</a>';
+					$buttons .='<a href="index.php?site=vms&action=delete&vmID='.$ds['vmID'].'" class="button small center grey"><span class="icon" data-icon="T"></span>Delete</a>';
 				}
 				$vm = array();
 				$vm['name'] = $ds['name'];
@@ -278,6 +294,7 @@ $modul = new Vms();
 $routing = Routing::getInstance();
 $routing->addRouteByAction($modul,'vms','new');
 $routing->addRouteByAction($modul,'vms','edit');
+$routing->addRouteByAction($modul,'vms','delete');
 $routing->addRouteByAction($modul,'vms','start');
 $routing->addRouteByAction($modul,'vms','stop');
 $routing->addRouteByAction($modul,'vms','assistent');
