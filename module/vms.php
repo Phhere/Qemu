@@ -160,8 +160,9 @@ class Vms extends Modul {
 		if($query->rowCount()){
 			$data = $query->fetch();
 			if($data['status'] == QemuMonitor::SHUTDOWN){
-				$owner = '';
-
+			
+				
+				$owner = '<option value="0">--</option>';
 				$query2 = $GLOBALS['pdo']->query("SELECT userID, username FROM users");
 
 				while($ds = $query2->fetch()){
