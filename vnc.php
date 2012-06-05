@@ -15,7 +15,7 @@ if(isset($_SESSION['user'])){
 			header("Content-Type: application/zip");
 			header("Content-Transfer-Encoding: binary");
 			echo '[connection]
-host='.$_SERVER['SERVER_NAME'].'
+host=10.11.12.1
 port='.$vm->vnc_port.'
 [options]
 viewonly=0

@@ -10,6 +10,7 @@ class QemuVm {
 	public $vmID;
 	public $vnc_port;
 	public $owner;
+	public $password
 	public function __construct($id){
 		$this->monitor = null;
 		$this->devices = array();

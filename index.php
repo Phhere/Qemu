@@ -27,5 +27,10 @@ include './boxes/navigation.php';
 include './boxes/ping.php';
 
 $GLOBALS['template']->assign('box_news',file_get_contents('boxes/news.php'));
-$GLOBALS['template']->draw( "index" );
+if(isset($GLOBALS['just_content']) && $GLOBALS['just_content'] == true){
+	$GLOBALS['template']->draw( "index_just_content" );
+}
+else{
+	$GLOBALS['template']->draw( "index" );
+}
 ?>

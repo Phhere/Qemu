@@ -84,6 +84,7 @@ class MyVM extends Modul{
 					$buttons  .= '<a href="screenshot.php?vmID='.$ds['vmID'].'" class="button small center"><span class="icon" data-icon="0"></span>Screenshot</a>';
 					if($ds['password']){
 						$buttons .= '<a href="vnc.php?vmID='.$ds['vmID'].'" class="button small center grey"><span class="icon" data-icon="0"></span>VNC</a>';
+						$buttons .= '<a href="index.php?site=vnc&vmID='.$ds['vmID'].'" class="button small center grey"><span class="icon" data-icon="0"></span>Web-VNC</a>';
 					}
 					else{
 						$buttons .= '<a href="#'.$ds['vmID'].'" disabled="disabled" class="button small center grey vm_disabled"><span class="icon" data-icon="0"></span>VNC</a>';
