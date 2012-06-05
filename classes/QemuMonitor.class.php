@@ -37,7 +37,7 @@ class QemuMonitor{
 			usleep($this->sleeptime);
 			$s=socket_get_status($this->socket);
 		} while ($s['unread_bytes']);
-		usleep($this->sleeptime);
+		//usleep($this->sleeptime);
 		return $r;
 	}
 

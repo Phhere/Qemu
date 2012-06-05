@@ -198,7 +198,9 @@ class QemuVm {
 	 * @param string $password The new password
 	 */
 	public function setVncPassword($password){
-		$this->monitor->execute("set_password vnc ".$password);
+		$this->monitor->execute("change vnc password");
+		$this->monitor->getResponse();
+		$this->monitor->execute($password);
 	}
 
 	/**
