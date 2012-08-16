@@ -1,2 +1,0 @@
-# $1 matrikel
-rm -f /home/vns_users/vnc_$1/.ssh/authorized_keys
